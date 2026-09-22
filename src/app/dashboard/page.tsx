@@ -3,39 +3,53 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// استخدم مفتاح ANON KEY الخاص بـ Supabase هنا
+// تعريف الأنواع بدقة لتجاوز خطأ any
+interface ApiKeyRecord {
+  id?: string;
+  developer_name?: string;
+  developer_email?: string;
+  api_key: string;
+  credits: number;
+  is_active: boolean;
+}
+
 const supabaseUrl = 'https://wexqgdkcwkzcrxgmxwkj.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndleHFnZGtjd2t6Y3J4Z214d2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwODUyODMsImV4cCI6MjEwNTY2MTI4M30.K7SS0Be1nNT-TMWp3021OfYiYsi7rM7f4h_3lrdN-2w';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function DeveloperDashboard() {
-  const [apiKeyData, setApiKeyData] = useState<any>(null);
+  const [apiKeyData, setApiKeyData] = useState<ApiKeyRecord | null>(null);
   const [showKey, setShowKey] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchDeveloperData() {
-      // نجلب بيانات المطور بناءً على ما رأيناه في قاعدة البيانات
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('api_keys')
         .select('*')
         .limit(1)
         .single();
 
-      if (data) setApiKeyData(data);
+      if (data) setApiKeyData(data as ApiKeyRecord);
       setLoading(false);
     }
     fetchDeveloperData();
   }, []);
 
   const copyToClipboard = () => {
-    if(apiKeyData) {
+    if (apiKeyData) {
       navigator.clipboard.writeText(apiKeyData.api_key);
       alert('تم نسخ مفتاح الـ API بنجاح!');
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center font-sans">جاري تحميل مساحة العمل...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center font-sans">
+        جاري تحميل مساحة العمل...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-8 font-sans border-t-4 border-blue-500" dir="rtl">
@@ -47,18 +61,20 @@ export default function DeveloperDashboard() {
             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-l from-blue-400 to-indigo-500">
               Kian AgentNet Workspace
             </h1>
-            <p className="text-gray-400 mt-2 text-sm">مرحباً بك يا <span className="text-white font-bold">{apiKeyData?.developer_name || 'مطور'}</span> ({apiKeyData?.developer_email})</p>
+            <p className="text-gray-400 mt-2 text-sm">
+              مرحباً بك يا <span className="text-white font-bold">{apiKeyData?.developer_name || 'مطور'}</span> ({apiKeyData?.developer_email || ''})
+            </p>
           </div>
           <div className="bg-gray-800 px-4 py-2 rounded-lg border border-gray-700 flex items-center gap-3">
             <span className="text-gray-400 text-sm">حالة الحساب:</span> 
             {apiKeyData?.is_active ? (
-                <span className="text-green-400 font-semibold flex items-center">
+              <span className="text-green-400 font-semibold flex items-center">
                 <span className="w-2 h-2 bg-green-500 rounded-full ml-2 animate-pulse"></span> نشط
-                </span>
+              </span>
             ) : (
-                <span className="text-red-400 font-semibold flex items-center">
+              <span className="text-red-400 font-semibold flex items-center">
                 <span className="w-2 h-2 bg-red-500 rounded-full ml-2"></span> موقوف
-                </span>
+              </span>
             )}
           </div>
         </header>
@@ -74,13 +90,13 @@ export default function DeveloperDashboard() {
               {apiKeyData?.credits || 0}
             </div>
             <p className="text-green-400 text-xs mt-3 flex items-center gap-1">
-               رصيد كافٍ للعمليات التشغيلية
+              رصيد كافٍ للعمليات التشغيلية
             </p>
           </div>
 
           {/* Plan Card */}
           <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg relative overflow-hidden">
-             <div className="absolute top-0 right-0 w-2 h-full bg-purple-500"></div>
+            <div className="absolute top-0 right-0 w-2 h-full bg-purple-500"></div>
             <h3 className="text-gray-400 text-sm font-medium mb-2">الباقة الحالية</h3>
             <div className="text-2xl font-bold text-white mt-1">Beta Pioneer</div>
             <button className="mt-5 text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition w-full shadow">
@@ -93,7 +109,7 @@ export default function DeveloperDashboard() {
             <div className="absolute top-0 right-0 w-2 h-full bg-gray-600"></div>
             <h3 className="text-gray-400 text-sm font-medium mb-4">اختبار الاستخراج</h3>
             <a href="/" className="text-center bg-gray-700 hover:bg-gray-600 text-white px-4 py-3 rounded-lg transition w-full border border-gray-600">
-               الانتقال لواجهة التجربة 🚀
+              الانتقال لواجهة التجربة 🚀
             </a>
           </div>
         </div>
