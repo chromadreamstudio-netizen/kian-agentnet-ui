@@ -80,15 +80,15 @@ export default function LandingPage() {
             <div className="ml-4 text-xs font-mono text-gray-500">POST /v1/extract</div>
           </div>
           <div className="p-6 overflow-x-auto text-sm font-mono text-gray-300 leading-relaxed">
-            <p><span className="text-purple-400">const</span> response = <span className="text-blue-400">await</span> fetch(<span className="text-green-400">'https://api.kian-agentnet.com/v1/extract'</span>, {'{'}</p>
-            <p className="pl-4">method: <span className="text-green-400">'POST'</span>,</p>
+            <p><span className="text-purple-400">const</span> response = <span className="text-blue-400">await</span> fetch(<span className="text-green-400">&apos;https://api.kian-agentnet.com/v1/extract&apos;</span>, {'{'}</p>
+            <p className="pl-4">method: <span className="text-green-400">&apos;POST&apos;</span>,</p>
             <p className="pl-4">headers: {'{'}</p>
-            <p className="pl-8"><span className="text-green-400">'Authorization'</span>: <span className="text-green-400">'Bearer YOUR_API_KEY'</span>,</p>
-            <p className="pl-8"><span className="text-green-400">'Content-Type'</span>: <span className="text-green-400">'application/json'</span></p>
+            <p className="pl-8"><span className="text-green-400">&apos;Authorization&apos;</span>: <span className="text-green-400">&apos;Bearer YOUR_API_KEY&apos;</span>,</p>
+            <p className="pl-8"><span className="text-green-400">&apos;Content-Type&apos;</span>: <span className="text-green-400">&apos;application/json&apos;</span></p>
             <p className="pl-4">{'}'},</p>
             <p className="pl-4">body: JSON.<span className="text-blue-400">stringify</span>({'{'}</p>
-            <p className="pl-8">text: <span className="text-green-400">"Waleed is a CTO with 20 years of experience in enterprise software."</span>,</p>
-            <p className="pl-8">schema: <span className="text-green-400">"name, role, experience_years, domain"</span></p>
+            <p className="pl-8">text: <span className="text-green-400">&quot;Waleed is a CTO with 20 years of experience in enterprise software.&quot;</span>,</p>
+            <p className="pl-8">schema: <span className="text-green-400">&quot;name, role, experience_years, domain&quot;</span></p>
             <p className="pl-4">{'}'})</p>
             <p>{'}'});</p>
           </div>
