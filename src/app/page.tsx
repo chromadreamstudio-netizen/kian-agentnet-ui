@@ -2,10 +2,20 @@
 
 import { useState } from 'react';
 
+// تعريف نوع البيانات لتجاوز أخطاء TypeScript في Vercel
+interface ExecutionResult {
+  status?: string;
+  message?: string;
+  details?: string;
+  protocol_version?: string;
+  data?: Record<string, unknown>;
+  error?: string;
+}
+
 export default function Home() {
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<ExecutionResult | null>(null);
 
   const handleExecute = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,26 +25,26 @@ export default function Home() {
     setResult(null);
 
     try {
-      // إرسال الطلب الفعلي إلى خادم FastAPI
       const response = await fetch('http://127.0.0.1:8000/v1/gateway/execute', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url: url }),
+        body: JSON.stringify({ url }),
       });
 
       if (!response.ok) {
         throw new Error(`خطأ في الخادم: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data: ExecutionResult = await response.json();
       setResult(data);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'خطأ غير معروف';
       setResult({
         status: "error",
-        message: "فشل الاتصال بالخادم. تأكد أن خادم Uvicorn يعمل على البورت 8000.",
-        details: error.message
+        message: "فشل الاتصال بالخادم. تأكد أن خادم Uvicorn يعمل.",
+        details: errorMessage
       });
     } finally {
       setIsLoading(false);
@@ -43,8 +53,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 font-sans">
-      
-      {/* Hero Section */}
       <div className="max-w-3xl w-full text-center space-y-8">
         <div className="space-y-4">
           <h1 className="text-5xl font-extrabold text-gray-900 tracking-tight">
@@ -58,7 +66,6 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleExecute} className="mt-8 flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto">
           <input
             type="url"
@@ -82,7 +89,6 @@ export default function Home() {
           </button>
         </form>
 
-        {/* Results */}
         {result && (
           <div className="mt-12 p-6 bg-white rounded-2xl shadow-sm border border-gray-100 text-right animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h3 className="text-lg font-bold text-gray-800 mb-2">نتيجة الاستخراج:</h3>
