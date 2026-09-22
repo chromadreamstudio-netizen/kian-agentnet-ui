@@ -23,6 +23,10 @@ export default function LandingPage() {
             <Link href="/login" className="hidden md:block text-sm font-medium text-gray-300 hover:text-white transition">
               Log in
             </Link>
+            {/* Dashboard Button */}
+            <Link href="/dashboard" className="hidden md:flex bg-blue-600/10 text-blue-400 border border-blue-500/30 hover:bg-blue-600/20 px-5 py-2.5 rounded-lg text-sm font-semibold transition items-center gap-2">
+               Dashboard ⚙️
+            </Link>
             <Link href="/signup" className="bg-white text-black hover:bg-gray-200 px-5 py-2.5 rounded-lg text-sm font-semibold transition shadow-sm">
               Sign up for free
             </Link>
@@ -61,8 +65,9 @@ export default function LandingPage() {
             <Link href="/signup" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-8 py-3.5 rounded-xl transition text-base font-semibold shadow-[0_0_20px_rgba(37,99,235,0.3)]">
               Get Your API Key
             </Link>
-            <Link href="/sandbox" className="w-full sm:w-auto bg-[#1a1a1a] hover:bg-[#222] text-white px-8 py-3.5 rounded-xl border border-gray-800 transition text-base font-semibold flex items-center justify-center gap-2">
-              Try the Sandbox <span className="text-xl">🚀</span>
+            {/* Updated Sandbox Link to redirect to Dashboard */}
+            <Link href="/dashboard" className="w-full sm:w-auto bg-[#1a1a1a] hover:bg-[#222] text-white px-8 py-3.5 rounded-xl border border-gray-800 transition text-base font-semibold flex items-center justify-center gap-2">
+              Go to Dashboard <span className="text-xl">🚀</span>
             </Link>
           </div>
         </div>
@@ -148,7 +153,7 @@ export default function LandingPage() {
             <ul className="space-y-2 text-sm text-gray-500">
               <li><Link href="/pricing" className="hover:text-white transition">Pricing</Link></li>
               <li><Link href="/docs" className="hover:text-white transition">API Documentation</Link></li>
-              <li><Link href="/sandbox" className="hover:text-white transition">Sandbox</Link></li>
+              <li><Link href="/dashboard" className="hover:text-white transition">Dashboard</Link></li>
             </ul>
           </div>
           <div>
