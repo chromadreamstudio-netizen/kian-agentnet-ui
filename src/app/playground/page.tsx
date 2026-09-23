@@ -16,44 +16,40 @@ export default function PlaygroundPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [apiKey, setApiKey] = useState('');
 
+  // محاولة جلب المفتاح تلقائياً للتسهيل، لكن إذا فشل يمكن للمستخدم إدخاله يدوياً
   useEffect(() => {
     const fetchApiKey = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push('/login');
-        return;
-      }
-      // جلب المفتاح مع معالجة الأخطاء المحتملة
-      const { data, error } = await supabase.from('api_keys').select('api_key').eq('user_id', user.id).single();
+      if (!user) return;
+      
+      const { data } = await supabase.from('api_keys').select('api_key').eq('user_id', user.id).single();
       if (data) {
         setApiKey(data.api_key);
-      } else if (error) {
-        console.error("Error fetching API Key:", error);
       }
     };
     fetchApiKey();
-  }, [router]);
+  }, []);
 
   const handleExtract = async () => {
+    if (!apiKey.trim()) {
+      setResult('Error: Please enter your API Key in the authentication field above.');
+      return;
+    }
+
     if (!inputText.trim()) {
       setResult('Error: Please provide some text to extract.');
       return;
     }
 
-    if (!apiKey) {
-      setResult('Error: API Key is missing. Please refresh the page or check your dashboard.');
-      return;
-    }
-
     setIsLoading(true);
-    setResult('Processing extraction... ⏳');
+    setResult('Processing extraction... ⏳\nConnecting to /api/v1/extract');
 
     try {
       const response = await fetch('/api/v1/extract', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
+          'Authorization': `Bearer ${apiKey.trim()}`
         },
         body: JSON.stringify({ 
           text: inputText, 
@@ -67,7 +63,7 @@ export default function PlaygroundPage() {
         throw new Error(data.error || 'Extraction failed');
       }
 
-      setResult(JSON.stringify(data.result, null, 2));
+      setResult(JSON.stringify(data, null, 2));
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       setResult(`Error: ${errorMessage}`);
@@ -84,7 +80,7 @@ export default function PlaygroundPage() {
         <div className="flex justify-between items-center border-b border-gray-800 pb-6">
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">Extraction Playground 🚀</h1>
-            <p className="text-gray-400">Test the AI engine instantly. Provide unstructured text and a JSON schema.</p>
+            <p className="text-gray-400">Test the API endpoint instantly with your unique API Key.</p>
           </div>
           <button 
             onClick={() => router.push('/dashboard')}
@@ -99,12 +95,28 @@ export default function PlaygroundPage() {
           
           {/* Left Column: Inputs */}
           <div className="space-y-6">
+            
+            {/* API Key Input */}
+            <div className="bg-[#111] border border-blue-900/50 rounded-xl p-6 shadow-lg relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-blue-600"></div>
+              <label className="block text-sm font-medium text-blue-400 mb-2">🔑 Authentication (Bearer Token)</label>
+              <input
+                type="text"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="sk_kian_..."
+                className="w-full bg-[#0a0a0a] text-gray-200 border border-gray-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition font-mono text-sm"
+              />
+              <p className="text-xs text-gray-500 mt-2">Copy this from your dashboard. It is required to authenticate your API request.</p>
+            </div>
+
             <div className="bg-[#111] border border-gray-800 rounded-xl p-6 shadow-lg">
               <label className="block text-sm font-medium text-gray-400 mb-2">1. Unstructured Text Input</label>
               <textarea
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                className="w-full h-32 bg-[#0a0a0a] text-gray-200 border border-gray-700 rounded-lg p-4 focus:outline-none focus:border-blue-500 transition resize-none"
+                className="w-full h-32 bg-[#0a0a0a] text-gray-200 border border-gray-700 rounded-lg p-4 focus:outline-none focus:border-blue-500 transition resize-none text-right"
+                dir="rtl"
                 placeholder="Paste your raw text, emails, or logs here..."
               />
             </div>
@@ -123,22 +135,22 @@ export default function PlaygroundPage() {
               onClick={handleExtract}
               disabled={isLoading}
               className={`w-full font-bold py-3 rounded-lg transition flex justify-center items-center space-x-2 ${
-                isLoading ? 'bg-blue-600/50 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white'
+                isLoading ? 'bg-blue-600/50 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]'
               }`}
             >
-              <span>{isLoading ? 'Extracting Data...' : 'Run Extraction ⚡'}</span>
+              <span>{isLoading ? 'Extracting Data & Deducting Credits...' : 'Run Extraction ⚡'}</span>
             </button>
           </div>
 
           {/* Right Column: Output */}
           <div className="bg-[#111] border border-gray-800 rounded-xl p-6 shadow-lg flex flex-col">
             <div className="flex justify-between items-center mb-4">
-              <label className="block text-sm font-medium text-gray-400">Structured Output (JSON)</label>
-              <span className="text-xs bg-gray-800 text-gray-300 px-2 py-1 rounded">Live Response</span>
+              <label className="block text-sm font-medium text-gray-400">Structured Output (JSON Response)</label>
+              <span className="text-xs bg-gray-800 text-gray-300 px-2 py-1 rounded border border-gray-700">API Response</span>
             </div>
             <div className="flex-1 bg-[#0a0a0a] border border-gray-700 rounded-lg p-4 relative overflow-hidden">
               <pre className={`font-mono text-sm w-full h-full overflow-auto whitespace-pre-wrap ${result.includes('Error') ? 'text-red-400' : 'text-green-400'}`}>
-                {result || '// Your extracted data will appear here...'}
+                {result || '// Your extracted data and API metadata will appear here...'}
               </pre>
             </div>
           </div>
