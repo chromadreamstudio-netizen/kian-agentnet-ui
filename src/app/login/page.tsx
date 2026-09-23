@@ -21,15 +21,17 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
       setError(error.message);
-      setLoading(false);
+      setLoading(false); // إيقاف حالة التحميل إذا كان هناك خطأ
     } else {
+      // إضافة Cookie لتصريح مرور الـ Middleware
+      document.cookie = "kian-session=true; path=/; max-age=86400";
       router.push('/dashboard');
     }
   };
