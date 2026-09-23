@@ -23,16 +23,30 @@ export default function PlaygroundPage() {
         router.push('/login');
         return;
       }
-      const { data } = await supabase.from('api_keys').select('api_key').eq('user_id', user.id).single();
-      if (data) setApiKey(data.api_key);
+      // جلب المفتاح مع معالجة الأخطاء المحتملة
+      const { data, error } = await supabase.from('api_keys').select('api_key').eq('user_id', user.id).single();
+      if (data) {
+        setApiKey(data.api_key);
+      } else if (error) {
+        console.error("Error fetching API Key:", error);
+      }
     };
     fetchApiKey();
   }, [router]);
 
   const handleExtract = async () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim()) {
+      setResult('Error: Please provide some text to extract.');
+      return;
+    }
+
+    if (!apiKey) {
+      setResult('Error: API Key is missing. Please refresh the page or check your dashboard.');
+      return;
+    }
+
     setIsLoading(true);
-    setResult('Processing extraction...');
+    setResult('Processing extraction... ⏳');
 
     try {
       const response = await fetch('/api/v1/extract', {
@@ -55,8 +69,8 @@ export default function PlaygroundPage() {
 
       setResult(JSON.stringify(data.result, null, 2));
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      setResult(`Error: ${errorMessage}\n\nملاحظة: هذا الخطأ طبيعي لأننا سنقوم ببرمجة الـ API Backend (المرحلة الخامسة) في الخطوة القادمة.`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setResult(`Error: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
@@ -107,13 +121,12 @@ export default function PlaygroundPage() {
 
             <button
               onClick={handleExtract}
-              disabled={isLoading || !apiKey}
+              disabled={isLoading}
               className={`w-full font-bold py-3 rounded-lg transition flex justify-center items-center space-x-2 ${
                 isLoading ? 'bg-blue-600/50 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white'
               }`}
             >
-              <span>{isLoading ? 'Extracting Data...' : 'Run Extraction'}</span>
-              {!isLoading && <span>⚡</span>}
+              <span>{isLoading ? 'Extracting Data...' : 'Run Extraction ⚡'}</span>
             </button>
           </div>
 
@@ -124,14 +137,9 @@ export default function PlaygroundPage() {
               <span className="text-xs bg-gray-800 text-gray-300 px-2 py-1 rounded">Live Response</span>
             </div>
             <div className="flex-1 bg-[#0a0a0a] border border-gray-700 rounded-lg p-4 relative overflow-hidden">
-              <pre className={`font-mono text-sm w-full h-full overflow-auto whitespace-pre-wrap ${result.startsWith('Error') ? 'text-red-400' : 'text-green-400'}`}>
+              <pre className={`font-mono text-sm w-full h-full overflow-auto whitespace-pre-wrap ${result.includes('Error') ? 'text-red-400' : 'text-green-400'}`}>
                 {result || '// Your extracted data will appear here...'}
               </pre>
-              {isLoading && (
-                <div className="absolute inset-0 bg-[#0a0a0a]/80 flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                </div>
-              )}
             </div>
           </div>
 
