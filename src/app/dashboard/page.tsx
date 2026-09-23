@@ -64,7 +64,6 @@ export default function DashboardPage() {
     }
   };
 
-  // دالة تسجيل الخروج الشاملة مع تفريغ الكاش وإعادة التوجيه الإجباري
   const handleLogout = async () => {
     await supabase.auth.signOut();
     document.cookie = "kian-session=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT";
@@ -124,7 +123,10 @@ export default function DashboardPage() {
           {/* Action Card */}
           <div className="bg-[#111] border border-gray-800 rounded-xl p-6 shadow-lg flex flex-col justify-between border-l-4 border-l-gray-600">
             <h3 className="text-sm font-medium text-gray-400 mb-4">Extraction Testing</h3>
-            <button className="w-full bg-[#1a1a1a] hover:bg-[#222] border border-gray-700 text-white font-medium py-3 rounded transition flex items-center justify-center space-x-2">
+            <button 
+              onClick={() => router.push('/playground')}
+              className="w-full bg-[#1a1a1a] hover:bg-[#222] border border-gray-700 text-white font-medium py-3 rounded transition flex items-center justify-center space-x-2"
+            >
               <span>Go to Playground</span>
               <span>🚀</span>
             </button>
