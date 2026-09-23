@@ -64,16 +64,13 @@ export default function DashboardPage() {
     }
   };
 
-  // دالة تسجيل الخروج الجديدة
+  // دالة تسجيل الخروج الشاملة مع تفريغ الكاش وإعادة التوجيه الإجباري
   const handleLogout = async () => {
-    // 1. تسجيل الخروج من Supabase
     await supabase.auth.signOut();
-    
-    // 2. مسح تصريح الـ Middleware
-    document.cookie = "kian-session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    
-    // 3. العودة للصفحة الرئيسية
-    router.push('/');
+    document.cookie = "kian-session=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = '/';
   };
 
   return (
@@ -95,7 +92,6 @@ export default function DashboardPage() {
               <span className="text-sm text-gray-300">Account Status: <span className="text-green-400">Active</span></span>
             </div>
             
-            {/* زر تسجيل الخروج الجديد */}
             <button 
               onClick={handleLogout}
               className="text-sm bg-[#1a1a1a] hover:bg-red-900/30 text-gray-400 hover:text-red-400 border border-gray-800 hover:border-red-900/50 px-4 py-2 rounded-full transition"
