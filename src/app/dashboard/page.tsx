@@ -27,7 +27,6 @@ export default function DashboardPage() {
       
       setUserEmail(user.email ?? 'User');
 
-      // جلب بيانات الملف الشخصي (الرصيد والخطة)
       const { data: profileData } = await supabase
         .from('profiles')
         .select('credits, plan')
@@ -42,7 +41,6 @@ export default function DashboardPage() {
         setPlan('No Plan Found');
       }
 
-      // جلب مفتاح الـ API
       const { data: keyData } = await supabase
         .from('api_keys')
         .select('api_key')
@@ -66,6 +64,18 @@ export default function DashboardPage() {
     }
   };
 
+  // دالة تسجيل الخروج الجديدة
+  const handleLogout = async () => {
+    // 1. تسجيل الخروج من Supabase
+    await supabase.auth.signOut();
+    
+    // 2. مسح تصريح الـ Middleware
+    document.cookie = "kian-session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    
+    // 3. العودة للصفحة الرئيسية
+    router.push('/');
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-gray-100 p-8 font-sans">
       <div className="max-w-5xl mx-auto space-y-8">
@@ -78,9 +88,20 @@ export default function DashboardPage() {
               Welcome back, <span className="text-blue-400 font-medium">{userEmail}</span>
             </p>
           </div>
-          <div className="flex items-center space-x-2 bg-[#111] border border-gray-800 px-4 py-2 rounded-full">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-sm text-gray-300">Account Status: <span className="text-green-400">Active</span></span>
+          
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 bg-[#111] border border-gray-800 px-4 py-2 rounded-full">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+              <span className="text-sm text-gray-300">Account Status: <span className="text-green-400">Active</span></span>
+            </div>
+            
+            {/* زر تسجيل الخروج الجديد */}
+            <button 
+              onClick={handleLogout}
+              className="text-sm bg-[#1a1a1a] hover:bg-red-900/30 text-gray-400 hover:text-red-400 border border-gray-800 hover:border-red-900/50 px-4 py-2 rounded-full transition"
+            >
+              Logout
+            </button>
           </div>
         </div>
 
