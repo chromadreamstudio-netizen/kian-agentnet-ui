@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 
-// إعداد اتصال Supabase
 const supabaseUrl = 'https://wexqgdkcwkzcrxgmxwkj.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndleHFnZGtjd2t6Y3J4Z214d2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwODUyODMsImV4cCI6MjEwNTY2MTI4M30.K7SS0Be1nNT-TMWp3021OfYiYsi7rM7f4h_3lrdN-2w';
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -12,21 +11,60 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export default function DashboardPage() {
   const router = useRouter();
   const [userEmail, setUserEmail] = useState<string | null>('Loading...');
+  const [credits, setCredits] = useState<number | string>('...');
+  const [plan, setPlan] = useState<string>('Loading...');
+  const [apiKey, setApiKey] = useState<string>('Loading...');
+  const [showKey, setShowKey] = useState(false);
 
   useEffect(() => {
-    // دالة لجلب بيانات المستخدم الحالي من الجلسة
-    const getUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
+    const fetchUserData = async () => {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
       
-      if (error || !user) {
+      if (authError || !user) {
         router.push('/login');
+        return;
+      }
+      
+      setUserEmail(user.email ?? 'User');
+
+      // جلب بيانات الملف الشخصي (الرصيد والخطة)
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('credits, plan')
+        .eq('id', user.id)
+        .single();
+
+      if (profileData) {
+        setCredits(profileData.credits);
+        setPlan(profileData.plan);
       } else {
-        setUserEmail(user.email ?? 'User');
+        setCredits(0);
+        setPlan('No Plan Found');
+      }
+
+      // جلب مفتاح الـ API
+      const { data: keyData } = await supabase
+        .from('api_keys')
+        .select('api_key')
+        .eq('user_id', user.id)
+        .single();
+
+      if (keyData) {
+        setApiKey(keyData.api_key);
+      } else {
+        setApiKey('No API Key found. Please create a new account to trigger generation.');
       }
     };
 
-    getUser();
+    fetchUserData();
   }, [router]);
+
+  const copyToClipboard = () => {
+    if (apiKey && !apiKey.includes('found')) {
+      navigator.clipboard.writeText(apiKey);
+      alert('API Key copied to clipboard!');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-gray-100 p-8 font-sans">
@@ -51,14 +89,16 @@ export default function DashboardPage() {
           {/* Credits Card */}
           <div className="bg-[#111] border border-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-l-blue-500">
             <h3 className="text-sm font-medium text-gray-400 mb-4">Remaining Credits (Tokens)</h3>
-            <div className="text-4xl font-black text-white mb-2">98</div>
-            <p className="text-xs text-green-400">Sufficient balance for operations</p>
+            <div className="text-4xl font-black text-white mb-2">{credits}</div>
+            <p className="text-xs text-green-400">
+              {typeof credits === 'number' && credits > 0 ? 'Sufficient balance for operations' : 'Balance empty or loading'}
+            </p>
           </div>
 
           {/* Plan Card */}
           <div className="bg-[#111] border border-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-l-purple-500">
             <h3 className="text-sm font-medium text-gray-400 mb-4">Current Plan</h3>
-            <div className="text-2xl font-bold text-white mb-4">Beta Pioneer</div>
+            <div className="text-2xl font-bold text-white mb-4">{plan}</div>
             <button className="w-full bg-blue-600/20 text-blue-400 border border-blue-600/50 hover:bg-blue-600/30 font-medium py-2 rounded transition text-sm">
               Upgrade Plan (Coming Soon)
             </button>
@@ -78,11 +118,19 @@ export default function DashboardPage() {
         <div className="bg-[#111] border border-gray-800 rounded-xl p-6 shadow-lg">
           <h3 className="text-lg font-bold text-white mb-4">Authentication API Key</h3>
           <div className="flex items-center space-x-4 bg-[#0a0a0a] border border-gray-800 p-4 rounded-lg">
-            <code className="text-blue-400 flex-1 overflow-x-auto">
-              sk_test_kian_***********************************
+            <code className="text-blue-400 flex-1 overflow-x-auto font-mono">
+              {showKey ? apiKey : 'sk_kian_***********************************'}
             </code>
-            <button className="text-sm text-gray-400 hover:text-white transition">Show</button>
-            <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded text-sm transition">
+            <button 
+              onClick={() => setShowKey(!showKey)}
+              className="text-sm text-gray-400 hover:text-white transition"
+            >
+              {showKey ? 'Hide' : 'Show'}
+            </button>
+            <button 
+              onClick={copyToClipboard}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded text-sm transition"
+            >
               Copy
             </button>
           </div>
