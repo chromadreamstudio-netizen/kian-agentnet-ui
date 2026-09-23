@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 
-// تهيئة Supabase للتحقق من الجلسة
 const supabaseUrl = 'https://wexqgdkcwkzcrxgmxwkj.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndleHFnZGtjd2t6Y3J4Z214d2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwODUyODMsImV4cCI6MjEwNTY2MTI4M30.K7SS0Be1nNT-TMWp3021OfYiYsi7rM7f4h_3lrdN-2w';
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -17,7 +16,6 @@ export default function PlaygroundPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [apiKey, setApiKey] = useState('');
 
-  // جلب مفتاح API الخاص بالمستخدم لاستخدامه في الطلب
   useEffect(() => {
     const fetchApiKey = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -37,7 +35,6 @@ export default function PlaygroundPage() {
     setResult('Processing extraction...');
 
     try {
-      // سنقوم بتوجيه الطلب إلى نقطة النهاية التي سنبنيها في المرحلة الخامسة
       const response = await fetch('/api/v1/extract', {
         method: 'POST',
         headers: {
@@ -57,8 +54,9 @@ export default function PlaygroundPage() {
       }
 
       setResult(JSON.stringify(data.result, null, 2));
-    } catch (error: any) {
-      setResult(`Error: ${error.message}\n\nملاحظة: هذا الخطأ طبيعي لأننا لم نقم ببرمجة الـ API Backend (المرحلة الخامسة) بعد.`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setResult(`Error: ${errorMessage}\n\nملاحظة: هذا الخطأ طبيعي لأننا سنقوم ببرمجة الـ API Backend (المرحلة الخامسة) في الخطوة القادمة.`);
     } finally {
       setIsLoading(false);
     }
