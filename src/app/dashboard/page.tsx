@@ -1,164 +1,175 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import Link from "next/link";
+import { 
+  Terminal, 
+  Key, 
+  CreditCard, 
+  Activity, 
+  Copy, 
+  Check, 
+  BookOpen, 
+  Settings, 
+  Zap,
+  LogOut
+} from "lucide-react";
 
-const supabaseUrl = 'https://wexqgdkcwkzcrxgmxwkj.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndleHFnZGtjd2t6Y3J4Z214d2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwODUyODMsImV4cCI6MjEwNTY2MTI4M30.K7SS0Be1nNT-TMWp3021OfYiYsi7rM7f4h_3lrdN-2w';
-const supabase = createClient(supabaseUrl, supabaseKey);
+export default function Dashboard() {
+  const [copied, setCopied] = useState(false);
+  const apiKey = "sk_kian_913b5c3a6daa265cb6f3e98911c57c35";
 
-export default function DashboardPage() {
-  const router = useRouter();
-  const [userEmail, setUserEmail] = useState<string | null>('Loading...');
-  const [credits, setCredits] = useState<number | string>('...');
-  const [plan, setPlan] = useState<string>('Loading...');
-  const [apiKey, setApiKey] = useState<string>('Loading...');
-  const [showKey, setShowKey] = useState(false);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
-      if (authError || !user) {
-        router.push('/login');
-        return;
-      }
-      
-      setUserEmail(user.email ?? 'User');
-
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('credits, plan')
-        .eq('id', user.id)
-        .single();
-
-      if (profileData) {
-        setCredits(profileData.credits);
-        setPlan(profileData.plan);
-      } else {
-        setCredits(0);
-        setPlan('No Plan Found');
-      }
-
-      const { data: keyData } = await supabase
-        .from('api_keys')
-        .select('api_key')
-        .eq('user_id', user.id)
-        .single();
-
-      if (keyData) {
-        setApiKey(keyData.api_key);
-      } else {
-        setApiKey('No API Key found. Please create a new account to trigger generation.');
-      }
-    };
-
-    fetchUserData();
-  }, [router]);
-
-  const copyToClipboard = () => {
-    if (apiKey && !apiKey.includes('found')) {
-      navigator.clipboard.writeText(apiKey);
-      alert('API Key copied to clipboard!');
-    }
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    document.cookie = "kian-session=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    localStorage.clear();
-    sessionStorage.clear();
-    window.location.href = '/';
+  const handleCopy = () => {
+    navigator.clipboard.writeText(apiKey);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-gray-100 p-8 font-sans">
-      <div className="max-w-5xl mx-auto space-y-8">
-        
-        {/* Header Section */}
-        <div className="flex justify-between items-end border-b border-gray-800 pb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Kian AgentNet Workspace</h1>
-            <p className="text-gray-400">
-              Welcome back, <span className="text-blue-400 font-medium">{userEmail}</span>
-            </p>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center space-x-2 bg-[#111] border border-gray-800 px-4 py-2 rounded-full">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-              <span className="text-sm text-gray-300">Account Status: <span className="text-green-400">Active</span></span>
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-blue-500/30">
+      
+      {/* Top Navigation */}
+      <nav className="border-b border-gray-800 bg-[#0a0a0a]">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+              <Zap size={18} className="text-white" />
             </div>
-            
-            <button 
-              onClick={handleLogout}
-              className="text-sm bg-[#1a1a1a] hover:bg-red-900/30 text-gray-400 hover:text-red-400 border border-gray-800 hover:border-red-900/50 px-4 py-2 rounded-full transition"
-            >
-              Logout
+            <span className="font-bold text-xl tracking-tight">Kian AgentNet</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <button className="text-sm text-gray-400 hover:text-white transition-colors">Support</button>
+            <button className="text-sm text-gray-400 hover:text-white transition-colors">Docs</button>
+            <div className="h-4 w-px bg-gray-800"></div>
+            <button className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-400 transition-colors">
+              <LogOut size={16} /> Sign Out
             </button>
           </div>
+        </div>
+      </nav>
+
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        {/* Header */}
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold mb-2">Welcome back, Developer 👋</h1>
+          <p className="text-gray-400">Manage your API keys, monitor usage, and test the protocol.</p>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          
           {/* Credits Card */}
-          <div className="bg-[#111] border border-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-l-blue-500">
-            <h3 className="text-sm font-medium text-gray-400 mb-4">Remaining Credits (Tokens)</h3>
-            <div className="text-4xl font-black text-white mb-2">{credits}</div>
-            <p className="text-xs text-green-400">
-              {typeof credits === 'number' && credits > 0 ? 'Sufficient balance for operations' : 'Balance empty or loading'}
-            </p>
+          <div className="bg-[#111111] border border-gray-800 rounded-xl p-6 shadow-lg">
+            <div className="flex items-center gap-3 text-blue-400 mb-4">
+              <Activity size={20} />
+              <h3 className="font-semibold text-gray-200">API Usage (Credits)</h3>
+            </div>
+            <div className="flex items-end gap-2">
+              <span className="text-4xl font-bold">98</span>
+              <span className="text-gray-500 mb-1">/ 1,000</span>
+            </div>
+            <div className="w-full bg-gray-900 rounded-full h-2 mt-4 overflow-hidden">
+              <div className="bg-blue-500 h-2 rounded-full" style={{ width: "9.8%" }}></div>
+            </div>
+            <p className="text-xs text-gray-500 mt-3">Resets on Oct 1, 2026</p>
           </div>
 
-          {/* Plan Card */}
-          <div className="bg-[#111] border border-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-l-purple-500">
-            <h3 className="text-sm font-medium text-gray-400 mb-4">Current Plan</h3>
-            <div className="text-2xl font-bold text-white mb-4">{plan}</div>
-            <button className="w-full bg-blue-600/20 text-blue-400 border border-blue-600/50 hover:bg-blue-600/30 font-medium py-2 rounded transition text-sm">
-              Upgrade Plan (Coming Soon)
-            </button>
+          {/* Active Workflows */}
+          <div className="bg-[#111111] border border-gray-800 rounded-xl p-6 shadow-lg">
+            <div className="flex items-center gap-3 text-green-400 mb-4">
+              <Terminal size={20} />
+              <h3 className="font-semibold text-gray-200">Successful Extractions</h3>
+            </div>
+            <div className="text-4xl font-bold">1,204</div>
+            <p className="text-xs text-gray-500 mt-5">+12% from last week</p>
           </div>
 
-          {/* Action Card */}
-          <div className="bg-[#111] border border-gray-800 rounded-xl p-6 shadow-lg flex flex-col justify-between border-l-4 border-l-gray-600">
-            <h3 className="text-sm font-medium text-gray-400 mb-4">Extraction Testing</h3>
-            <button 
-              onClick={() => router.push('/playground')}
-              className="w-full bg-[#1a1a1a] hover:bg-[#222] border border-gray-700 text-white font-medium py-3 rounded transition flex items-center justify-center space-x-2"
-            >
-              <span>Go to Playground</span>
-              <span>🚀</span>
+          {/* Billing Plan */}
+          <div className="bg-[#111111] border border-gray-800 rounded-xl p-6 shadow-lg relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-bl-full blur-2xl"></div>
+            <div className="flex items-center gap-3 text-indigo-400 mb-4">
+              <CreditCard size={20} />
+              <h3 className="font-semibold text-gray-200">Current Plan</h3>
+            </div>
+            <div className="text-2xl font-bold text-white mb-1">Hobby (Free Tier)</div>
+            <p className="text-sm text-gray-400 mb-4">Upgrade for higher rate limits.</p>
+            <button className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors">
+              Upgrade Plan
             </button>
           </div>
         </div>
 
-        {/* API Key Section */}
-        <div className="bg-[#111] border border-gray-800 rounded-xl p-6 shadow-lg">
-          <h3 className="text-lg font-bold text-white mb-4">Authentication API Key</h3>
-          <div className="flex items-center space-x-4 bg-[#0a0a0a] border border-gray-800 p-4 rounded-lg">
-            <code className="text-blue-400 flex-1 overflow-x-auto font-mono">
-              {showKey ? apiKey : 'sk_kian_***********************************'}
-            </code>
-            <button 
-              onClick={() => setShowKey(!showKey)}
-              className="text-sm text-gray-400 hover:text-white transition"
-            >
-              {showKey ? 'Hide' : 'Show'}
-            </button>
-            <button 
-              onClick={copyToClipboard}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded text-sm transition"
-            >
-              Copy
-            </button>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Main Content Area (API Keys) */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-[#111111] border border-gray-800 rounded-xl p-6 shadow-lg">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <Key size={20} className="text-yellow-500" />
+                  <h2 className="text-lg font-bold text-white">Authentication & API Keys</h2>
+                </div>
+                <button className="text-sm px-3 py-1.5 border border-gray-700 hover:bg-gray-800 rounded-md transition-colors">
+                  Revoke Key
+                </button>
+              </div>
+              
+              <p className="text-sm text-gray-400 mb-4">
+                Use this key to authenticate your requests to the AgentNet Gateway. Keep it secret.
+              </p>
+              
+              <div className="flex items-center gap-3 bg-[#0a0a0a] p-3 rounded-lg border border-gray-800">
+                <code className="text-sm text-yellow-500 font-mono flex-1 overflow-hidden text-ellipsis">
+                  {apiKey}
+                </code>
+                <button 
+                  onClick={handleCopy}
+                  className="p-2 bg-gray-800 hover:bg-gray-700 rounded-md transition-colors text-gray-300"
+                  title="Copy API Key"
+                >
+                  {copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
+                </button>
+              </div>
+            </div>
           </div>
-          <p className="mt-4 text-xs text-amber-500/80 bg-amber-500/10 border border-amber-500/20 p-3 rounded">
-            ⚠️ Security Warning: This API key grants direct access to your credits and AI execution engine. Do not share it publicly.
-          </p>
-        </div>
 
-      </div>
+          {/* Sidebar Area (Quick Actions) */}
+          <div className="space-y-4">
+            <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Quick Actions</h2>
+            
+            <Link href="/playground" className="flex items-start gap-4 p-4 bg-[#111111] border border-gray-800 rounded-xl hover:border-blue-500/50 hover:bg-[#151515] transition-all group">
+              <div className="p-2 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 text-blue-400 transition-colors">
+                <Terminal size={20} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-200 mb-1">Protocol Playground</h3>
+                <p className="text-xs text-gray-400">Test extractions visually without writing any code.</p>
+              </div>
+            </Link>
+
+            <Link href="#" className="flex items-start gap-4 p-4 bg-[#111111] border border-gray-800 rounded-xl hover:border-indigo-500/50 hover:bg-[#151515] transition-all group opacity-70 cursor-not-allowed">
+              <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-400">
+                <BookOpen size={20} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-200 mb-1">API Documentation <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full ml-1">Soon</span></h3>
+                <p className="text-xs text-gray-400">Learn how to integrate the API into your apps.</p>
+              </div>
+            </Link>
+
+            <Link href="#" className="flex items-start gap-4 p-4 bg-[#111111] border border-gray-800 rounded-xl hover:border-gray-600 hover:bg-[#151515] transition-all group">
+              <div className="p-2 bg-gray-800 rounded-lg text-gray-400 group-hover:text-gray-300 transition-colors">
+                <Settings size={20} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-200 mb-1">Account Settings</h3>
+                <p className="text-xs text-gray-400">Manage billing, team members, and preferences.</p>
+              </div>
+            </Link>
+          </div>
+
+        </div>
+      </main>
     </div>
   );
 }
