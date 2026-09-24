@@ -9,7 +9,7 @@ export default function ProtocolPlayground() {
   const [schema, setSchema] = useState("Extract core entities, dates, and structured historical events from this page.");
   
   const [loading, setLoading] = useState(false);
-  const [output, setOutput] = useState<any>(null);
+  const [output, setOutput] = useState<Record<string, unknown> | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,7 +38,7 @@ export default function ProtocolPlayground() {
       } else {
         setOutput(data);
       }
-    } catch (err) {
+    } catch {
       setError("فشل الاتصال بالخادم. تأكد من عمل الـ Backend.");
     } finally {
       setLoading(false);
@@ -178,7 +178,7 @@ export default function ProtocolPlayground() {
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-gray-600">
                 <Database size={48} className="mb-4 opacity-20" />
-                <p className="text-sm">Click "Run Extraction" to see the magic.</p>
+                <p className="text-sm">Click &quot;Run Extraction&quot; to see the magic.</p>
               </div>
             )}
           </div>
@@ -189,23 +189,22 @@ export default function ProtocolPlayground() {
   );
 }
 
-// دالة بسيطة لتلوين كود الـ JSON ليظهر كـ Terminal احترافي
 function syntaxHighlight(json: string) {
   json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-    let cls = 'text-[#79c0ff]'; // لون النصوص العادية
+    let cls = 'text-[#79c0ff]';
     if (/^"/.test(match)) {
       if (/:$/.test(match)) {
-        cls = 'text-[#d2a8ff]'; // لون المفاتيح (Keys)
+        cls = 'text-[#d2a8ff]';
       } else {
-        cls = 'text-[#a5d6ff]'; // لون القيم النصية (Strings)
+        cls = 'text-[#a5d6ff]';
       }
     } else if (/true|false/.test(match)) {
-      cls = 'text-[#ff7b72]'; // لون البوليان (Booleans)
+      cls = 'text-[#ff7b72]';
     } else if (/null/.test(match)) {
-      cls = 'text-[#ff7b72]'; // لون الـ Null
+      cls = 'text-[#ff7b72]';
     } else {
-      cls = 'text-[#f0883e]'; // لون الأرقام (Numbers)
+      cls = 'text-[#f0883e]';
     }
     return '<span class="' + cls + '">' + match + '</span>';
   });
