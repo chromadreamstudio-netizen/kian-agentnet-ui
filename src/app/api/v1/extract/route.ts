@@ -1,27 +1,27 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://wexqgdkcwkzcrxgmxwkj.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndleHFnZGtjd2t6Y3J4Z214d2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwODUyODMsImV4cCI6MjEwNTY2MTI4M30.K7SS0Be1nNT-TMWp3021OfYiYsi7rM7f4h_3lrdN-2w';
-const supabase = createClient(supabaseUrl, supabaseKey);
+// نستخدم Service Role Key لتخطي الـ RLS في الباك إند والقدرة على قراءة المفاتيح والخصم
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY! 
+);
 
 export async function POST(req: Request) {
   try {
-    // 1. التحقق من وجود مفتاح الـ API في الـ Header
+    // 1. استلام الطلب واستخراج مفتاح الـ API من الهيدر
     const authHeader = req.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { error: 'Missing or invalid Authorization header' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Invalid or missing API Key' }, { status: 401 });
     }
 
-    const apiKey = authHeader.replace('Bearer ', '').trim();
+    const apiKey = authHeader.split(' ')[1];
+    const body = await req.json();
 
-    // 2. التحقق من صحة المفتاح وجلب معرف المستخدم
-    const { data: keyData, error: keyError } = await supabase
+    // 2. التحقق من وجود المفتاح في قاعدة البيانات
+    const { data: keyData, error: keyError } = await supabaseAdmin
       .from('api_keys')
-      .select('user_id')
+      .select('user_id, id')
       .eq('api_key', apiKey)
       .single();
 
@@ -29,74 +29,42 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid API Key' }, { status: 401 });
     }
 
-    const userId = keyData.user_id;
-
-    // 3. التحقق من رصيد النقاط للمستخدم
-    const { data: profileData, error: profileError } = await supabase
+    // 3. التحقق من رصيد المستخدم
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('credits')
-      .eq('id', userId)
+      .eq('id', keyData.user_id)
       .single();
 
-    if (profileError || !profileData) {
-      return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
+    if (profileError || !profile || profile.credits <= 0) {
+      return NextResponse.json({ error: 'Insufficient credits. Please upgrade your plan.' }, { status: 402 });
     }
 
-    if (profileData.credits <= 0) {
-      return NextResponse.json(
-        { error: 'Insufficient credits. Please upgrade your plan.' },
-        { status: 402 }
-      );
-    }
-
-    // 4. قراءة البيانات المرسلة
-    const body = await req.json();
-    const { text, schema } = body;
-
-    if (!text || !schema) {
-      return NextResponse.json(
-        { error: 'Both text and schema are required.' },
-        { status: 400 }
-      );
-    }
-
-    // 5. خصم نقطة واحدة من رصيد المستخدم
-    const newCredits = profileData.credits - 1;
-
-    await supabase
+    // 4. خصم نقطة واحدة من الرصيد
+    await supabaseAdmin
       .from('profiles')
-      .update({ credits: newCredits })
-      .eq('id', userId);
+      .update({ credits: profile.credits - 1 })
+      .eq('id', keyData.user_id);
 
-    // 6. تسجيل العملية في جدول اللوجات api_usage_logs
-    await supabase.from('api_usage_logs').insert({
-      user_id: userId,
-      endpoint: '/v1/extract',
-      tokens_used: 1,
-      status_code: 200,
-    });
-
-    // 7. معالجة وتشكيل النتيجة بناءً على الـ Schema
-    const extractedData: Record<string, unknown> = {};
-    if (typeof schema === 'object' && schema !== null) {
-      Object.keys(schema).forEach((key) => {
-        const lowerKey = key.toLowerCase();
-        if (lowerKey.includes('name')) extractedData[key] = 'وليد طه';
-        else if (lowerKey.includes('role')) extractedData[key] = 'Chief Technology Officer (CTO)';
-        else if (lowerKey.includes('experience')) extractedData[key] = 20;
-        else if (lowerKey.includes('domain')) extractedData[key] = 'Software Architecture & Telecom Infrastructure';
-        else extractedData[key] = `Extracted data for ${key}`;
+    // 5. تسجيل عملية الاستخدام في الـ Logs
+    await supabaseAdmin
+      .from('api_usage_logs')
+      .insert({
+        api_key_id: keyData.id,
+        status: 'success',
+        execution_time_ms: 350 // رقم افتراضي لسرعة الاستجابة حالياً
       });
-    }
 
+    // 6. محاكاة الرد من الذكاء الاصطناعي بناءً على النص والـ Schema التي أدخلتها
+    // (لاحقاً سنربط هذا الجزء بمحرك OpenAI أو Gemini الحقيقي)
     return NextResponse.json({
-      success: true,
-      remaining_credits: newCredits,
-      result: Object.keys(extractedData).length > 0 ? extractedData : { raw_input: text, schema },
-    });
+      name: "وليد طه",
+      role: "مدير تقني",
+      experience_years: 20,
+      domain: "هندسة البرمجيات والبنية التحتية للمؤسسات"
+    }, { status: 200 });
 
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
