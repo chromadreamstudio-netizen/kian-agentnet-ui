@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Play, Copy, Check, Loader2, AlertCircle, Database, Shield } from "lucide-react";
 
 export default function ProtocolPlayground() {
@@ -66,9 +67,12 @@ export default function ProtocolPlayground() {
             Test the AgentNet Web Protocol instantly with your API Key.
           </p>
         </div>
-        <button className="px-4 py-2 rounded-lg border border-gray-800 text-sm hover:bg-gray-800/50 transition-all text-gray-300">
+        <Link 
+          href="/" 
+          className="px-4 py-2 rounded-lg border border-gray-800 text-sm hover:bg-gray-800/50 transition-all text-gray-300"
+        >
           Back to Dashboard
-        </button>
+        </Link>
       </div>
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
