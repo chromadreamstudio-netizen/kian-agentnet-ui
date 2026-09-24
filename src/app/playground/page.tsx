@@ -1,174 +1,212 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@supabase/supabase-js';
+import { useState } from "react";
+import { Play, Copy, Check, Loader2, AlertCircle, Database, Shield } from "lucide-react";
 
-// إعداد الاتصال بقاعدة البيانات (نقطة الالتقاء)
-const supabaseUrl = 'https://wexqgdkcwkzcrxgmxwkj.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndleHFnZGtjd2t6Y3J4Z214d2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwODUyODMsImV4cCI6MjEwNTY2MTI4M30.K7SS0Be1nNT-TMWp3021OfYiYsi7rM7f4h_3lrdN-2w';
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-export default function PlaygroundPage() {
-  const router = useRouter();
+export default function ProtocolPlayground() {
+  const [apiKey, setApiKey] = useState("sk_kian_913b5c3a6daa265cb6f3e98911c57c35");
+  const [url, setUrl] = useState("https://ar.wikipedia.org/wiki/تاريخ_مصر");
+  const [schema, setSchema] = useState("Extract core entities, dates, and structured historical events from this page.");
   
-  // 1. تغيير حقل النص المباشر إلى حقل رابط (URL) ليتوافق مع نظام Playwright في Render
-  const [inputUrl, setInputUrl] = useState('https://ar.wikipedia.org/wiki/تاريخ_مصر');
-  // 2. تغيير الهيكل الافتراضي ليكون نص تعليمات كما يطلب نموذج Gemini في الباك إند
-  const [schema, setSchema] = useState('Extract core entities, dates, and structured historical events from this page.');
-  
-  const [result, setResult] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [apiKey, setApiKey] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [output, setOutput] = useState<any>(null);
+  const [copied, setCopied] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // جلب المفتاح تلقائياً للتسهيل
-  useEffect(() => {
-    const fetchApiKey = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      
-      const { data } = await supabase.from('api_keys').select('api_key').eq('user_id', user.id).single();
-      if (data) {
-        setApiKey(data.api_key);
-      }
-    };
-    fetchApiKey();
-  }, []);
-
-  const handleExtract = async () => {
-    if (!apiKey.trim()) {
-      setResult('Error: Please enter your API Key in the authentication field above.');
-      return;
-    }
-
-    if (!inputUrl.trim()) {
-      setResult('Error: Please provide a valid target URL.');
-      return;
-    }
-
-    setIsLoading(true);
-    setResult('Connecting to Kian AgentNet Gateway on Render... ⏳\nExecuting Browser Protocol... (This may take 10-15 seconds)');
+  const handleRunExtraction = async () => {
+    setLoading(true);
+    setError(null);
+    setOutput(null);
 
     try {
-      // 3. الاتصال برابط خادم Render بناءً على المتغير البيئي في Vercel
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://kian-agentnet-backend.onrender.com';
-      
-      const response = await fetch(`${apiUrl}/v1/gateway/execute`, {
-        method: 'POST',
+      const response = await fetch("https://kian-agentnet-backend.onrender.com/v1/gateway/execute", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          // 4. إرسال المفتاح في الهيدر x-api-key كما يتوقع كود Python
-          'x-api-key': apiKey.trim() 
+          "Content-Type": "application/json",
+          "X-API-Key": apiKey,
         },
-        // 5. إرسال البيانات بأسماء المتغيرات (url, target_schema) المطابقة لـ ProtocolRequest
-        body: JSON.stringify({ 
-          url: inputUrl, 
-          target_schema: schema 
+        body: JSON.stringify({
+          url: url,
+          target_schema: schema,
         }),
       });
 
       const data = await response.json();
       
-      if (!response.ok) {
-        // دعم لرسائل الخطأ القادمة من FastAPI
-        throw new Error(data.detail || data.message || 'Extraction failed'); 
+      if (!response.ok || data.status === "gateway_error" || data.status === "fatal_error") {
+        setError(data.message || "حدث خطأ غير معروف أثناء المعالجة.");
+      } else {
+        setOutput(data);
       }
-
-      setResult(JSON.stringify(data, null, 2));
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      setResult(`Error: ${errorMessage}`);
+    } catch (err) {
+      setError("فشل الاتصال بالخادم. تأكد من عمل الـ Backend.");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
+    }
+  };
+
+  const handleCopy = () => {
+    if (output) {
+      navigator.clipboard.writeText(JSON.stringify(output, null, 2));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-gray-100 p-8 font-sans">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-[#0a0a0a] text-white p-8 font-sans selection:bg-blue-500/30">
+      
+      {/* Header */}
+      <div className="max-w-6xl mx-auto flex justify-between items-center mb-12">
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent flex items-center gap-3">
+            Protocol Playground 🚀
+          </h1>
+          <p className="text-gray-400 mt-2 text-sm">
+            Test the AgentNet Web Protocol instantly with your API Key.
+          </p>
+        </div>
+        <button className="px-4 py-2 rounded-lg border border-gray-800 text-sm hover:bg-gray-800/50 transition-all text-gray-300">
+          Back to Dashboard
+        </button>
+      </div>
+
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* Header */}
-        <div className="flex justify-between items-center border-b border-gray-800 pb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Protocol Playground 🚀</h1>
-            <p className="text-gray-400">Test the AgentNet Web Protocol instantly with your API Key.</p>
+        {/* Left Column: Inputs */}
+        <div className="space-y-6">
+          
+          {/* Auth Card */}
+          <div className="bg-[#111111] p-6 rounded-xl border border-gray-800 shadow-2xl shadow-black/50 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-yellow-500"></div>
+            <label className="flex items-center gap-2 text-sm text-yellow-500 mb-3 font-medium">
+              <Shield size={16} /> Authentication (X-API-Key)
+            </label>
+            <input
+              type="text"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              className="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg p-3 text-sm text-gray-300 focus:outline-none focus:border-yellow-500/50 transition-colors"
+            />
+            <p className="text-xs text-gray-500 mt-2">Required to authenticate your request via Supabase database.</p>
           </div>
-          <button 
-            onClick={() => router.push('/dashboard')}
-            className="bg-[#111] hover:bg-[#222] border border-gray-800 text-white px-4 py-2 rounded transition"
+
+          {/* URL Input */}
+          <div className="bg-[#111111] p-6 rounded-xl border border-gray-800 shadow-xl">
+            <label className="block text-sm text-gray-400 mb-3 font-medium">1. Target Website URL</label>
+            <input
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg p-3 text-sm text-gray-200 focus:outline-none focus:border-blue-500/50 transition-colors"
+              placeholder="https://example.com"
+            />
+          </div>
+
+          {/* Schema Input */}
+          <div className="bg-[#111111] p-6 rounded-xl border border-gray-800 shadow-xl">
+            <label className="block text-sm text-gray-400 mb-3 font-medium">2. Target Schema (Extraction Instructions)</label>
+            <textarea
+              value={schema}
+              onChange={(e) => setSchema(e.target.value)}
+              rows={4}
+              className="w-full bg-[#0a0a0a] border border-gray-800 rounded-lg p-4 text-sm text-blue-400 font-mono focus:outline-none focus:border-blue-500/50 transition-colors resize-none leading-relaxed"
+            />
+          </div>
+
+          {/* Action Button */}
+          <button
+            onClick={handleRunExtraction}
+            disabled={loading}
+            className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-300 ${
+              loading 
+                ? "bg-blue-600/50 cursor-not-allowed text-white/70" 
+                : "bg-blue-600 hover:bg-blue-500 hover:shadow-[0_0_30px_-5px_rgba(37,99,235,0.4)] text-white"
+            }`}
           >
-            Back to Dashboard
+            {loading ? (
+              <>
+                <Loader2 size={20} className="animate-spin" />
+                Processing Protocol...
+              </>
+            ) : (
+              <>
+                <Play size={20} />
+                Run Extraction
+              </>
+            )}
           </button>
         </div>
 
-        {/* Workspace Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Right Column: Output Terminal */}
+        <div className="bg-[#111111] rounded-xl border border-gray-800 flex flex-col overflow-hidden shadow-2xl h-[700px]">
           
-          {/* Left Column: Inputs */}
-          <div className="space-y-6">
+          {/* Terminal Header */}
+          <div className="bg-[#0a0a0a] border-b border-gray-800 p-4 flex justify-between items-center">
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              <Database size={16} />
+              <span>Structured Output</span>
+            </div>
             
-            {/* API Key Input */}
-            <div className="bg-[#111] border border-blue-900/50 rounded-xl p-6 shadow-lg relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-blue-600"></div>
-              <label className="block text-sm font-medium text-blue-400 mb-2">🔑 Authentication (X-API-Key)</label>
-              <input
-                type="text"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk_kian_..."
-                className="w-full bg-[#0a0a0a] text-gray-200 border border-gray-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition font-mono text-sm"
-              />
-              <p className="text-xs text-gray-500 mt-2">Required to authenticate your request via Supabase database.</p>
-            </div>
-
-            <div className="bg-[#111] border border-gray-800 rounded-xl p-6 shadow-lg">
-              <label className="block text-sm font-medium text-gray-400 mb-2">1. Target Website URL</label>
-              <input
-                type="url"
-                value={inputUrl}
-                onChange={(e) => setInputUrl(e.target.value)}
-                className="w-full bg-[#0a0a0a] text-gray-200 border border-gray-700 rounded-lg p-4 focus:outline-none focus:border-blue-500 transition text-left"
-                dir="ltr"
-                placeholder="https://..."
-              />
-            </div>
-
-            <div className="bg-[#111] border border-gray-800 rounded-xl p-6 shadow-lg">
-              <label className="block text-sm font-medium text-gray-400 mb-2">2. Target Schema (Extraction Instructions)</label>
-              <textarea
-                value={schema}
-                onChange={(e) => setSchema(e.target.value)}
-                className="w-full h-32 bg-[#0a0a0a] text-blue-400 border border-gray-700 rounded-lg p-4 font-mono text-sm focus:outline-none focus:border-blue-500 transition resize-none"
-                spellCheck="false"
-              />
-            </div>
-
-            <button
-              onClick={handleExtract}
-              disabled={isLoading}
-              className={`w-full font-bold py-3 rounded-lg transition flex justify-center items-center space-x-2 ${
-                isLoading ? 'bg-blue-600/50 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]'
-              }`}
-            >
-              <span>{isLoading ? 'Executing Protocol...' : 'Run Extraction ⚡'}</span>
-            </button>
+            {output && (
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-2 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-md text-xs font-medium text-gray-300 transition-colors"
+              >
+                {copied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
+                {copied ? "Copied!" : "Copy JSON"}
+              </button>
+            )}
           </div>
 
-          {/* Right Column: Output */}
-          <div className="bg-[#111] border border-gray-800 rounded-xl p-6 shadow-lg flex flex-col">
-            <div className="flex justify-between items-center mb-4">
-              <label className="block text-sm font-medium text-gray-400">Structured Output</label>
-              <span className="text-xs bg-gray-800 text-gray-300 px-2 py-1 rounded border border-gray-700">Render Backend Response</span>
-            </div>
-            <div className="flex-1 bg-[#0a0a0a] border border-gray-700 rounded-lg p-4 relative overflow-hidden">
-              <pre className={`font-mono text-sm w-full h-full overflow-auto whitespace-pre-wrap ${result.includes('Error') ? 'text-red-400' : 'text-green-400'}`}>
-                {result || '// Extracted JSON entities and connection data will appear here...'}
+          {/* Terminal Body */}
+          <div className="flex-1 p-6 overflow-auto bg-[#050505] relative custom-scrollbar">
+            {loading ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-blue-500/50">
+                <Loader2 size={40} className="animate-spin mb-4" />
+                <p className="text-sm animate-pulse">Initializing AI Agents... reading DOM...</p>
+              </div>
+            ) : error ? (
+              <div className="flex items-start gap-3 text-red-400 bg-red-400/10 p-4 rounded-lg border border-red-400/20">
+                <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
+                <p className="text-sm font-mono whitespace-pre-wrap">{error}</p>
+              </div>
+            ) : output ? (
+              <pre className="text-[13px] font-mono leading-relaxed text-[#a5d6ff]">
+                <code dangerouslySetInnerHTML={{ __html: syntaxHighlight(JSON.stringify(output, null, 2)) }} />
               </pre>
-            </div>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-gray-600">
+                <Database size={48} className="mb-4 opacity-20" />
+                <p className="text-sm">Click "Run Extraction" to see the magic.</p>
+              </div>
+            )}
           </div>
-
         </div>
+
       </div>
     </div>
   );
+}
+
+// دالة بسيطة لتلوين كود الـ JSON ليظهر كـ Terminal احترافي
+function syntaxHighlight(json: string) {
+  json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+    let cls = 'text-[#79c0ff]'; // لون النصوص العادية
+    if (/^"/.test(match)) {
+      if (/:$/.test(match)) {
+        cls = 'text-[#d2a8ff]'; // لون المفاتيح (Keys)
+      } else {
+        cls = 'text-[#a5d6ff]'; // لون القيم النصية (Strings)
+      }
+    } else if (/true|false/.test(match)) {
+      cls = 'text-[#ff7b72]'; // لون البوليان (Booleans)
+    } else if (/null/.test(match)) {
+      cls = 'text-[#ff7b72]'; // لون الـ Null
+    } else {
+      cls = 'text-[#f0883e]'; // لون الأرقام (Numbers)
+    }
+    return '<span class="' + cls + '">' + match + '</span>';
+  });
 }
