@@ -247,7 +247,7 @@ export default function LandingPage() {
               <div className="text-4xl font-extrabold mb-6">$0 <span className="text-sm font-normal text-gray-400">/ forever</span></div>
               
               <ul className="space-y-3 text-sm text-gray-300 mb-8">
-                <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-400" /> 1,000 Free API Credits</li>
+                <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-400" /> 100 Free API Credits</li>
                 <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-400" /> Interactive Protocol Playground</li>
                 <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-green-400" /> Standard Rate Limits</li>
               </ul>

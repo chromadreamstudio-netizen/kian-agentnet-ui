@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
 import { 
@@ -13,35 +13,94 @@ import {
   BookOpen, 
   Settings, 
   Zap,
-  LogOut
+  LogOut,
+  Loader2
 } from "lucide-react";
 
-// تهيئة عميل Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function Dashboard() {
   const [copied, setCopied] = useState(false);
-  const apiKey = "sk_kian_913b5c3a6daa265cb6f3e98911c57c35";
+  const [loading, setLoading] = useState(true);
+  
+  // حالات البيانات الحقيقية من جدول api_keys
+  const [apiKey, setApiKey] = useState("");
+  const [credits, setCredits] = useState(100);
+  const [isActive, setIsActive] = useState(true);
+
+  useEffect(() => {
+    async function fetchOrInitializeApiKey() {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const userId = session.user.id;
+
+      // 1. الاستعلام من جدول api_keys الموجود بالفعل
+      let { data, error } = await supabase
+        .from('api_keys')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      // 2. إذا لم يكن للمستخدم مفتاح، ننشئ له مفتاحاً جديداً بـ 100 كريديت
+      if (!data) {
+        const randomString = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+          .map(b => b.toString(16).padStart(2, '0')).join('');
+        const newApiKey = `sk_kian_${randomString}`;
+
+        const { data: newData, error: insertError } = await supabase
+          .from('api_keys')
+          .insert([{ 
+            user_id: userId, 
+            api_key: newApiKey,
+            credits: 100,
+            is_active: true
+          }])
+          .select()
+          .single();
+
+        if (newData) data = newData;
+      }
+
+      // 3. تحديث الواجهة بالبيانات الحقيقية
+      if (data) {
+        setApiKey(data.api_key);
+        setCredits(data.credits ?? 100);
+        setIsActive(data.is_active ?? true);
+      }
+      
+      setLoading(false);
+    }
+
+    fetchOrInitializeApiKey();
+  }, []);
 
   const handleCopy = () => {
+    if (!apiKey) return;
     navigator.clipboard.writeText(apiKey);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // دالة تسجيل الخروج الجديدة
   const handleSignOut = async () => {
-    // 1. مسح الكوكي الخاص بالـ Middleware
     document.cookie = "kian-session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-
-    // 2. إنهاء الجلسة في Supabase
     await supabase.auth.signOut();
-
-    // 3. التوجيه إلى صفحة تسجيل الدخول
     window.location.href = '/login';
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white">
+        <Loader2 className="animate-spin w-8 h-8 text-blue-500" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-blue-500/30">
@@ -59,7 +118,6 @@ export default function Dashboard() {
             <button className="text-sm text-gray-400 hover:text-white transition-colors">Support</button>
             <button className="text-sm text-gray-400 hover:text-white transition-colors">Docs</button>
             <div className="h-4 w-px bg-gray-800"></div>
-            {/* ربط دالة تسجيل الخروج بالزر هنا */}
             <button 
               onClick={handleSignOut}
               className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-400 transition-colors"
@@ -87,13 +145,16 @@ export default function Dashboard() {
               <h3 className="font-semibold text-gray-200">API Usage (Credits)</h3>
             </div>
             <div className="flex items-end gap-2">
-              <span className="text-4xl font-bold">98</span>
-              <span className="text-gray-500 mb-1">/ 1,000</span>
+              <span className="text-4xl font-bold">{credits}</span>
+              <span className="text-gray-500 mb-1">/ 100</span>
             </div>
             <div className="w-full bg-gray-900 rounded-full h-2 mt-4 overflow-hidden">
-              <div className="bg-blue-500 h-2 rounded-full" style={{ width: "9.8%" }}></div>
+              <div 
+                className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
+                style={{ width: `${Math.min(100, Math.max(0, (credits / 100) * 100))}%` }}
+              ></div>
             </div>
-            <p className="text-xs text-gray-500 mt-3">Resets on Oct 1, 2026</p>
+            <p className="text-xs text-gray-500 mt-3">Free Trial Balance</p>
           </div>
 
           {/* Active Workflows */}
@@ -102,8 +163,8 @@ export default function Dashboard() {
               <Terminal size={20} />
               <h3 className="font-semibold text-gray-200">Successful Extractions</h3>
             </div>
-            <div className="text-4xl font-bold">1,204</div>
-            <p className="text-xs text-gray-500 mt-5">+12% from last week</p>
+            <div className="text-4xl font-bold">0</div>
+            <p className="text-xs text-gray-500 mt-5">Ready for first extraction</p>
           </div>
 
           {/* Billing Plan */}
@@ -114,7 +175,7 @@ export default function Dashboard() {
               <h3 className="font-semibold text-gray-200">Current Plan</h3>
             </div>
             <div className="text-2xl font-bold text-white mb-1">Hobby (Free Tier)</div>
-            <p className="text-sm text-gray-400 mb-4">Upgrade for higher rate limits.</p>
+            <p className="text-sm text-gray-400 mb-4">Upgrade via Lemon Squeezy for higher limits.</p>
             <button className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors">
               Upgrade Plan
             </button>
@@ -142,7 +203,7 @@ export default function Dashboard() {
               
               <div className="flex items-center gap-3 bg-[#0a0a0a] p-3 rounded-lg border border-gray-800">
                 <code className="text-sm text-yellow-500 font-mono flex-1 overflow-hidden text-ellipsis">
-                  {apiKey}
+                  {apiKey || "Generating Key..."}
                 </code>
                 <button 
                   onClick={handleCopy}
@@ -176,16 +237,6 @@ export default function Dashboard() {
               <div>
                 <h3 className="font-semibold text-gray-200 mb-1">API Documentation <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full ml-1">Soon</span></h3>
                 <p className="text-xs text-gray-400">Learn how to integrate the API into your apps.</p>
-              </div>
-            </Link>
-
-            <Link href="#" className="flex items-start gap-4 p-4 bg-[#111111] border border-gray-800 rounded-xl hover:border-gray-600 hover:bg-[#151515] transition-all group">
-              <div className="p-2 bg-gray-800 rounded-lg text-gray-400 group-hover:text-gray-300 transition-colors">
-                <Settings size={20} />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-200 mb-1">Account Settings</h3>
-                <p className="text-xs text-gray-400">Manage billing, team members, and preferences.</p>
               </div>
             </Link>
           </div>
