@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { 
   Zap, 
   Terminal, 
@@ -17,6 +18,13 @@ import {
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const router = useRouter();
+
+  // دالة لمسح الكوكي قبل التوجيه لصفحة التسجيل أو الدخول
+  const handleAuthNavigation = (path: string) => {
+    document.cookie = "kian-session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    router.push(path);
+  };
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-blue-500/30 overflow-x-hidden">
@@ -51,18 +59,18 @@ export default function LandingPage() {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            <Link 
-              href="/login" 
+            <button 
+              onClick={() => handleAuthNavigation('/login')}
               className="text-sm px-4 py-2 text-gray-300 hover:text-white transition-colors"
             >
               Sign In
-            </Link>
-            <Link 
-              href="/signup" 
+            </button>
+            <button 
+              onClick={() => handleAuthNavigation('/signup')}
               className="text-sm font-medium px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-lg shadow-blue-600/25 hover:shadow-blue-500/40"
             >
               Sign Up
-            </Link>
+            </button>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -84,12 +92,12 @@ export default function LandingPage() {
               Interactive Playground 🚀
             </Link>
             <div className="pt-3 border-t border-gray-800 flex flex-col gap-2">
-              <Link href="/login" className="w-full text-center py-2 text-gray-300 hover:text-white font-medium">
+              <button onClick={() => handleAuthNavigation('/login')} className="w-full text-center py-2 text-gray-300 hover:text-white font-medium">
                 Sign In
-              </Link>
-              <Link href="/signup" className="w-full text-center py-2 bg-blue-600 rounded-lg text-white font-medium">
+              </button>
+              <button onClick={() => handleAuthNavigation('/signup')} className="w-full text-center py-2 bg-blue-600 rounded-lg text-white font-medium">
                 Sign Up
-              </Link>
+              </button>
             </div>
           </div>
         )}
@@ -123,13 +131,13 @@ export default function LandingPage() {
             <ArrowRight size={18} />
           </Link>
 
-          <Link 
-            href="/signup" 
+          <button 
+            onClick={() => handleAuthNavigation('/signup')}
             className="w-full sm:w-auto px-8 py-4 rounded-xl border border-gray-800 hover:bg-gray-800/60 text-gray-300 font-semibold text-base transition-all flex items-center justify-center gap-2"
           >
             <Shield size={18} className="text-yellow-500" />
             Get Free API Key
-          </Link>
+          </button>
         </div>
 
         {/* Code / Output Terminal Demo Preview */}
@@ -245,12 +253,12 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <Link 
-              href="/signup" 
+            <button 
+              onClick={() => handleAuthNavigation('/signup')}
               className="w-full py-3 rounded-xl border border-gray-700 hover:bg-gray-800 text-center font-semibold text-sm transition-colors block"
             >
               Get Started Free
-            </Link>
+            </button>
           </div>
 
           {/* Pro Plan */}
