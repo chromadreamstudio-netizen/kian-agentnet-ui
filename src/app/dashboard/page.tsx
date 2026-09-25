@@ -11,7 +11,6 @@ import {
   Copy, 
   Check, 
   BookOpen, 
-  Settings, 
   Zap,
   LogOut,
   Loader2
@@ -28,7 +27,6 @@ export default function Dashboard() {
   // حالات البيانات الحقيقية من جدول api_keys
   const [apiKey, setApiKey] = useState("");
   const [credits, setCredits] = useState(100);
-  const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
     async function fetchOrInitializeApiKey() {
@@ -41,8 +39,8 @@ export default function Dashboard() {
 
       const userId = session.user.id;
 
-      // 1. الاستعلام من جدول api_keys الموجود بالفعل
-      let { data, error } = await supabase
+      // 1. الاستعلام من جدول api_keys
+      let { data } = await supabase
         .from('api_keys')
         .select('*')
         .eq('user_id', userId)
@@ -54,7 +52,7 @@ export default function Dashboard() {
           .map(b => b.toString(16).padStart(2, '0')).join('');
         const newApiKey = `sk_kian_${randomString}`;
 
-        const { data: newData, error: insertError } = await supabase
+        const { data: newData } = await supabase
           .from('api_keys')
           .insert([{ 
             user_id: userId, 
@@ -72,7 +70,6 @@ export default function Dashboard() {
       if (data) {
         setApiKey(data.api_key);
         setCredits(data.credits ?? 100);
-        setIsActive(data.is_active ?? true);
       }
       
       setLoading(false);
