@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
 import { 
   Terminal, 
   Key, 
@@ -15,6 +16,11 @@ import {
   LogOut
 } from "lucide-react";
 
+// تهيئة عميل Supabase
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 export default function Dashboard() {
   const [copied, setCopied] = useState(false);
   const apiKey = "sk_kian_913b5c3a6daa265cb6f3e98911c57c35";
@@ -23,6 +29,18 @@ export default function Dashboard() {
     navigator.clipboard.writeText(apiKey);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  // دالة تسجيل الخروج الجديدة
+  const handleSignOut = async () => {
+    // 1. مسح الكوكي الخاص بالـ Middleware
+    document.cookie = "kian-session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+
+    // 2. إنهاء الجلسة في Supabase
+    await supabase.auth.signOut();
+
+    // 3. التوجيه إلى صفحة تسجيل الدخول
+    window.location.href = '/login';
   };
 
   return (
@@ -41,7 +59,11 @@ export default function Dashboard() {
             <button className="text-sm text-gray-400 hover:text-white transition-colors">Support</button>
             <button className="text-sm text-gray-400 hover:text-white transition-colors">Docs</button>
             <div className="h-4 w-px bg-gray-800"></div>
-            <button className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-400 transition-colors">
+            {/* ربط دالة تسجيل الخروج بالزر هنا */}
+            <button 
+              onClick={handleSignOut}
+              className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-400 transition-colors"
+            >
               <LogOut size={16} /> Sign Out
             </button>
           </div>
