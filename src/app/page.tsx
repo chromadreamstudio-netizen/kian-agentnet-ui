@@ -52,16 +52,16 @@ export default function LandingPage() {
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
             <Link 
-              href="/dashboard" 
+              href="/login" 
               className="text-sm px-4 py-2 text-gray-300 hover:text-white transition-colors"
             >
               Sign In
             </Link>
             <Link 
-              href="/dashboard" 
+              href="/signup" 
               className="text-sm font-medium px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-lg shadow-blue-600/25 hover:shadow-blue-500/40"
             >
-              Console Dashboard
+              Sign Up
             </Link>
           </div>
 
@@ -84,8 +84,11 @@ export default function LandingPage() {
               Interactive Playground 🚀
             </Link>
             <div className="pt-3 border-t border-gray-800 flex flex-col gap-2">
-              <Link href="/dashboard" className="w-full text-center py-2 bg-blue-600 rounded-lg text-white font-medium">
-                Go to Dashboard
+              <Link href="/login" className="w-full text-center py-2 text-gray-300 hover:text-white font-medium">
+                Sign In
+              </Link>
+              <Link href="/signup" className="w-full text-center py-2 bg-blue-600 rounded-lg text-white font-medium">
+                Sign Up
               </Link>
             </div>
           </div>
@@ -121,7 +124,7 @@ export default function LandingPage() {
           </Link>
 
           <Link 
-            href="/dashboard" 
+            href="/signup" 
             className="w-full sm:w-auto px-8 py-4 rounded-xl border border-gray-800 hover:bg-gray-800/60 text-gray-300 font-semibold text-base transition-all flex items-center justify-center gap-2"
           >
             <Shield size={18} className="text-yellow-500" />
@@ -243,8 +246,8 @@ export default function LandingPage() {
             </div>
 
             <Link 
-              href="/dashboard" 
-              className="w-full py-3 rounded-xl border border-gray-700 hover:bg-gray-800 text-center font-semibold text-sm transition-colors"
+              href="/signup" 
+              className="w-full py-3 rounded-xl border border-gray-700 hover:bg-gray-800 text-center font-semibold text-sm transition-colors block"
             >
               Get Started Free
             </Link>
@@ -271,7 +274,7 @@ export default function LandingPage() {
 
             <Link 
               href="/dashboard" 
-              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-center font-bold text-sm text-white transition-colors shadow-lg shadow-blue-600/30"
+              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-center font-bold text-sm text-white transition-colors shadow-lg shadow-blue-600/30 block"
             >
               Upgrade in Dashboard
             </Link>
