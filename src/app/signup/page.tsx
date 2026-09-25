@@ -5,8 +5,8 @@ import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-const supabaseUrl = 'https://wexqgdkcwkzcrxgmxwkj.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndleHFnZGtjd2t6Y3J4Z214d2tqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwODUyODMsImV4cCI6MjEwNTY2MTI4M30.K7SS0Be1nNT-TMWp3021OfYiYsi7rM7f4h_3lrdN-2w';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function SignupPage() {
@@ -31,7 +31,6 @@ export default function SignupPage() {
     } else {
       setMessage('Registration successful! Please check your email to verify your account.');
       if (data.session) {
-        document.cookie = "kian-session=true; path=/; max-age=86400";
         router.push('/dashboard');
       }
     }
@@ -101,7 +100,6 @@ export default function SignupPage() {
           </button>
         </form>
 
-        {/* الخط الفاصل وزر جوجل الجديد */}
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
