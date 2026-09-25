@@ -28,12 +28,18 @@ export default function LoginPage() {
       setError(error.message);
       setLoading(false);
     } else {
-      // التعديل هنا: استخدام التوجيه المباشر لكي يعمل الـ Middleware
+      // 1. زرع الكوكي الذي يتحقق منه الـ Middleware
+      document.cookie = "kian-session=true; path=/; max-age=86400; SameSite=Lax;";
+
+      // 2. التوجيه المباشر للداشبورد
       window.location.href = '/dashboard';
     }
   };
 
   const handleGoogleLogin = async () => {
+    // إعداد الكوكي مقدمًا للتسجيل عبر Google
+    document.cookie = "kian-session=true; path=/; max-age=86400; SameSite=Lax;";
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
