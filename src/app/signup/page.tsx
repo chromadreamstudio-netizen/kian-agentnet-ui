@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -10,7 +9,6 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function SignupPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,8 +28,9 @@ export default function SignupPage() {
       setMessage(error.message);
     } else {
       setMessage('Registration successful! Please check your email to verify your account.');
+      // التعديل هنا: استخدام التوجيه المباشر لتفعيل الـ Middleware
       if (data.session) {
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
       }
     }
     setLoading(false);
