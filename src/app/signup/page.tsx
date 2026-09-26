@@ -47,7 +47,11 @@ export default function SignUp() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/dashboard`
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
       }
     });
 
@@ -55,8 +59,6 @@ export default function SignUp() {
       setError(error.message);
       setLoading(false);
     }
-    // ملاحظة: مع Google OAuth، سيقوم Supabase بتوجيه المستخدم لصفحة جوجل ثم إعادته إلى /dashboard
-    // الكوكي سيزرع تلقائياً بناءً على إعدادات الـ Middleware أو صفحة الداشبورد.
   };
 
   return (
