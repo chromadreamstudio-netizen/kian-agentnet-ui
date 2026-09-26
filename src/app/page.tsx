@@ -56,10 +56,10 @@ export default function LandingPage() {
           </Link>
 
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
-            <Link href="#features" className="hover:text-white transition-colors">Features</Link>
-            <Link href="#pricing" className="hover:text-white transition-colors">Pricing</Link>
+            <a href="#features" className="hover:text-white transition-colors">Features</a>
+            <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
             <Link href="/about" className="hover:text-white transition-colors">About Us</Link>
-            <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+            <a href="mailto:hello@kian-agentnet.com" className="hover:text-white transition-colors">Contact</a>
             <div className="w-px h-4 bg-gray-700"></div>
             <Link href="/playground" className="flex items-center gap-2 text-kian-glow hover:text-white transition-colors">
               <Sparkles size={14} /> Playground
@@ -302,16 +302,16 @@ export default function LandingPage() {
             <h4 className="text-white font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-sm text-gray-500">
               <li><Link href="/playground" className="hover:text-white transition-colors">Playground</Link></li>
-              <li><Link href="#pricing" className="hover:text-white transition-colors">Pricing</Link></li>
-              <li><Link href="#features" className="hover:text-white transition-colors">Features</Link></li>
+              <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
+              <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
             </ul>
           </div>
           <div>
             <h4 className="text-white font-semibold mb-4">Company</h4>
             <ul className="space-y-2 text-sm text-gray-500">
               <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
-              <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
-              <li><a href="https://twitter.com" target="_blank" className="hover:text-white transition-colors">Twitter (X)</a></li>
+              <li><a href="mailto:hello@kian-agentnet.com" className="hover:text-white transition-colors">Contact</a></li>
+              <li><a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Twitter (X)</a></li>
             </ul>
           </div>
           <div>
