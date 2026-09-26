@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Users, Zap, Code } from "lucide-react";
+import { ArrowLeft, Zap, Code } from "lucide-react";
 
 export default function AboutUs() {
   return (
