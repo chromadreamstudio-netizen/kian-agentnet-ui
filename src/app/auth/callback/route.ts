@@ -14,6 +14,8 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  // إعادة التوجيه إلى الداشبورد بعد نجاح المصادقة وتعيين الكوكي
-  return NextResponse.redirect(`${origin}/dashboard`);
+  // ضبط الـ Cookie وتوجيه المستخدم للداشبورد فوراً بعد نجاح مصادقة جوجل
+  const response = NextResponse.redirect(`${origin}/dashboard`);
+  response.cookies.set('kian-session', 'true', { path: '/', maxAge: 86400 });
+  return response;
 }

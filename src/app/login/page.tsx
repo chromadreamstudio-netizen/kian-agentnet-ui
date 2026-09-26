@@ -37,13 +37,16 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = async () => {
-    // إعداد الكوكي مقدمًا للتسجيل عبر Google
-    document.cookie = "kian-session=true; path=/; max-age=86400; SameSite=Lax;";
+    setError('');
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/dashboard`,
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
       },
     });
 
