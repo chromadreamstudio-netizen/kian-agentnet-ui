@@ -10,13 +10,9 @@ import {
   Shield, 
   ArrowRight, 
   Cpu, 
-  Globe, 
   Sparkles, 
-  CheckCircle2,
   Menu,
-  X,
-  Code2,
-  Database
+  X
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -97,7 +93,7 @@ export default function LandingPage() {
               <Shield size={14} /> Enterprise-Grade Extraction Layer
             </div>
             <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6">
-              Don't Scrape. <br />
+              Don&apos;t Scrape. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-kian-brand via-kian-glow to-kian-accent">
                 Orchestrate Data.
               </span>
@@ -142,22 +138,22 @@ export default function LandingPage() {
               </div>
               <div className="p-6 font-mono text-sm">
                 <div className="mb-4">
-                  <span className="text-gray-500">// 1. The Agent's Request</span>
+                  <span className="text-gray-500">{"// 1. The Agent's Request"}</span>
                   <div className="text-white mt-2">
                     <span className="text-pink-400">const</span> response = <span className="text-kian-glow">await</span> kian.<span className="text-blue-300">extract</span>({'{'}
-                    <br/>&nbsp;&nbsp;url: <span className="text-green-400">"https://example.com"</span>,
-                    <br/>&nbsp;&nbsp;schema: <span className="text-green-400">"financial_data"</span>
+                    <br/>&nbsp;&nbsp;url: <span className="text-green-400">&quot;https://example.com&quot;</span>,
+                    <br/>&nbsp;&nbsp;schema: <span className="text-green-400">&quot;financial_data&quot;</span>
                     <br/>{'}'});
                   </div>
                 </div>
                 <div className="animate-pulse text-gray-500 mb-4">Processing via Gateway...</div>
                 <div>
-                  <span className="text-gray-500">// 2. Structured JSON Output</span>
+                  <span className="text-gray-500">{"// 2. Structured JSON Output"}</span>
                   <div className="text-kian-glow mt-2">
                     {'{'}
-                    <br/>&nbsp;&nbsp;<span className="text-white">"revenue"</span>: <span className="text-purple-400">"$2.4M"</span>,
-                    <br/>&nbsp;&nbsp;<span className="text-white">"growth"</span>: <span className="text-purple-400">"15%"</span>,
-                    <br/>&nbsp;&nbsp;<span className="text-white">"confidence_score"</span>: <span className="text-orange-400">0.99</span>
+                    <br/>&nbsp;&nbsp;<span className="text-white">&quot;revenue&quot;</span>: <span className="text-purple-400">&quot;$2.4M&quot;</span>,
+                    <br/>&nbsp;&nbsp;<span className="text-white">&quot;growth&quot;</span>: <span className="text-purple-400">&quot;15%&quot;</span>,
+                    <br/>&nbsp;&nbsp;<span className="text-white">&quot;confidence_score&quot;</span>: <span className="text-orange-400">0.99</span>
                     <br/>{'}'}
                   </div>
                 </div>
