@@ -12,7 +12,8 @@ import {
   Check,
   Zap,
   LogOut,
-  Loader2
+  Loader2,
+  ArrowRight
 } from "lucide-react";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -25,7 +26,7 @@ export default function Dashboard() {
   
   const [apiKey, setApiKey] = useState("");
   const [credits, setCredits] = useState(100);
-  const [userId, setUserId] = useState(""); // 1. أضفنا حالة لحفظ الـ ID
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     async function fetchOrInitializeApiKey() {
@@ -37,7 +38,7 @@ export default function Dashboard() {
       }
 
       const currentUserId = session.user.id;
-      setUserId(currentUserId); // 2. حفظ الـ ID
+      setUserId(currentUserId);
 
       let { data } = await supabase
         .from('api_keys')
@@ -90,29 +91,35 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white">
-        <Loader2 className="animate-spin w-8 h-8 text-blue-500" />
+      <div className="min-h-screen bg-kian-900 flex items-center justify-center text-white">
+        <Loader2 className="animate-spin w-8 h-8 text-kian-brand" />
       </div>
     );
   }
 
-  // 3. رابط الدفع مضاف إليه الـ user_id كمتغير مخصص (Custom Data)
   const checkoutUrl = `https://kian-agentnet1.lemonsqueezy.com/checkout/buy/cc334133-ff5c-4eee-8fca-99e66a2a3c2c?checkout[custom][user_id]=${userId}`;
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-blue-500/30">
-      <nav className="border-b border-gray-800 bg-[#0a0a0a]">
+    <div className="min-h-screen bg-kian-900 text-white font-sans selection:bg-kian-brand/30 overflow-x-hidden">
+      
+      {/* تأثيرات الإضاءة الخلفية */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-kian-brand/20 rounded-full mix-blend-screen filter blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[35rem] h-[35rem] bg-kian-accent/10 rounded-full mix-blend-screen filter blur-[120px]" />
+      </div>
+
+      <nav className="border-b border-white/5 bg-kian-900/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-kian-brand to-kian-accent flex items-center justify-center shadow-lg shadow-kian-brand/20">
               <Zap size={18} className="text-white" />
             </div>
-            <span className="font-bold text-xl tracking-tight">Kian AgentNet</span>
+            <span className="font-extrabold text-xl tracking-tight text-white">Kian AgentNet</span>
           </div>
           <div className="flex items-center gap-4">
-            <button className="text-sm text-gray-400 hover:text-white transition-colors">Support</button>
-            <button className="text-sm text-gray-400 hover:text-white transition-colors">Docs</button>
-            <div className="h-4 w-px bg-gray-800"></div>
+            <a href="mailto:hello@kian-agentnet.com" className="text-sm text-gray-400 hover:text-white transition-colors">Support</a>
+            <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">Home</Link>
+            <div className="h-4 w-px bg-white/10"></div>
             <button 
               onClick={handleSignOut}
               className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-400 transition-colors"
@@ -125,85 +132,85 @@ export default function Dashboard() {
 
       <main className="max-w-7xl mx-auto px-6 py-12">
         <div className="mb-10">
-          <h1 className="text-3xl font-bold mb-2">Welcome back, Developer 👋</h1>
-          <p className="text-gray-400">Manage your API keys, monitor usage, and test the protocol.</p>
+          <h1 className="text-3xl font-extrabold tracking-tight mb-2">Welcome back, Developer 👋</h1>
+          <p className="text-gray-400 text-sm">Manage your API keys, monitor usage, and test the protocol.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           
-          <div className="bg-[#111111] border border-gray-800 rounded-xl p-6 shadow-lg">
-            <div className="flex items-center gap-3 text-blue-400 mb-4">
+          <div className="bg-kian-800/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-xl">
+            <div className="flex items-center gap-3 text-kian-glow mb-4">
               <Activity size={20} />
               <h3 className="font-semibold text-gray-200">API Usage (Credits)</h3>
             </div>
             <div className="flex items-end gap-2">
-              <span className="text-4xl font-bold">{credits}</span>
+              <span className="text-4xl font-extrabold">{credits}</span>
               <span className="text-gray-500 mb-1">Credits</span>
             </div>
           </div>
 
-          <div className="bg-[#111111] border border-gray-800 rounded-xl p-6 shadow-lg">
-            <div className="flex items-center gap-3 text-green-400 mb-4">
+          <div className="bg-kian-800/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-xl">
+            <div className="flex items-center gap-3 text-emerald-400 mb-4">
               <Terminal size={20} />
               <h3 className="font-semibold text-gray-200">Successful Extractions</h3>
             </div>
-            <div className="text-4xl font-bold">0</div>
+            <div className="text-4xl font-extrabold">0</div>
           </div>
 
-          <div className="bg-[#111111] border border-gray-800 rounded-xl p-6 shadow-lg relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-bl-full blur-2xl"></div>
-            <div className="flex items-center gap-3 text-indigo-400 mb-4">
+          <div className="bg-gradient-to-b from-kian-brand/10 to-transparent border border-kian-brand/30 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-kian-brand/10 rounded-bl-full blur-2xl"></div>
+            <div className="flex items-center gap-3 text-kian-brand mb-4">
               <CreditCard size={20} />
               <h3 className="font-semibold text-gray-200">Current Plan</h3>
             </div>
-            <div className="text-2xl font-bold text-white mb-1">
+            <div className="text-2xl font-extrabold text-white mb-1">
               {credits > 1000 ? "Pro Tier" : "Hobby (Free Tier)"}
             </div>
-            <p className="text-sm text-gray-400 mb-4">Upgrade via Lemon Squeezy for higher limits.</p>
-            {/* 4. زر الترقية مربوط برابط Checkout */}
+            <p className="text-sm text-gray-400 mb-6">Upgrade via Lemon Squeezy for higher limits.</p>
             <a 
               href={checkoutUrl}
-              className="w-full flex items-center justify-center py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors"
+              className="w-full flex items-center justify-center gap-2 py-3 bg-kian-brand hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-kian-brand/20"
             >
-              Upgrade Plan ($19)
+              Upgrade Plan ($19) <ArrowRight size={16} />
             </a>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-[#111111] border border-gray-800 rounded-xl p-6 shadow-lg">
+            <div className="bg-kian-800/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-xl">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <Key size={20} className="text-yellow-500" />
+                  <Key size={20} className="text-kian-glow" />
                   <h2 className="text-lg font-bold text-white">Authentication & API Keys</h2>
                 </div>
               </div>
               <p className="text-sm text-gray-400 mb-4">
                 Use this key to authenticate your requests to the AgentNet Gateway. Keep it secret.
               </p>
-              <div className="flex items-center gap-3 bg-[#0a0a0a] p-3 rounded-lg border border-gray-800">
-                <code className="text-sm text-yellow-500 font-mono flex-1 overflow-hidden text-ellipsis">
+              <div className="flex items-center gap-3 bg-kian-900/80 p-3.5 rounded-xl border border-white/10">
+                <code className="text-sm text-kian-glow font-mono flex-1 overflow-hidden text-ellipsis">
                   {apiKey || "Generating Key..."}
                 </code>
                 <button 
                   onClick={handleCopy}
-                  className="p-2 bg-gray-800 hover:bg-gray-700 rounded-md transition-colors text-gray-300"
+                  className="p-2.5 bg-white/5 hover:bg-white/10 rounded-lg transition-colors text-gray-300 border border-white/10 flex items-center gap-1.5 text-xs font-medium"
                 >
-                  {copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
+                  {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                  {copied ? "Copied" : "Copy"}
                 </button>
               </div>
             </div>
           </div>
 
           <div className="space-y-4">
-            <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Quick Actions</h2>
-            <Link href="/playground" className="flex items-start gap-4 p-4 bg-[#111111] border border-gray-800 rounded-xl hover:border-blue-500/50 hover:bg-[#151515] transition-all group">
-              <div className="p-2 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 text-blue-400 transition-colors">
-                <Terminal size={20} />
+            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Quick Actions</h2>
+            <Link href="/playground" className="flex items-start gap-4 p-5 bg-kian-800/40 backdrop-blur-md border border-white/10 rounded-2xl hover:border-kian-brand/50 hover:bg-kian-800/60 transition-all group">
+              <div className="p-3 bg-kian-brand/10 rounded-xl group-hover:bg-kian-brand/20 text-kian-glow transition-colors">
+                <Terminal size={22} />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-200 mb-1">Protocol Playground</h3>
+                <h3 className="font-bold text-gray-200 mb-1 group-hover:text-white transition-colors">Protocol Playground</h3>
                 <p className="text-xs text-gray-400">Test extractions visually without writing any code.</p>
               </div>
             </Link>
