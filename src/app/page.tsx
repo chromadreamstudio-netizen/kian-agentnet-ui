@@ -70,7 +70,10 @@ export default function LandingPage() {
             <button onClick={() => handleAuthNavigation('/login')} className="text-sm font-medium px-4 py-2 text-gray-300 hover:text-white transition-colors">
               Sign In
             </button>
-            <button onClick={() => handleAuthNavigation('/signup')} className="relative group overflow-hidden text-sm font-medium px-6 py-2.5 rounded-lg bg-white text-black hover:bg-gray-100 transition-all">
+            <button onClick={() => handleAuthNavigation('/signup')} className="text-sm font-medium px-4 py-2 text-kian-glow hover:text-white transition-colors border border-kian-brand/30 rounded-lg bg-kian-brand/10">
+              Sign Up
+            </button>
+            <button onClick={() => handleAuthNavigation('/signup')} className="relative group overflow-hidden text-sm font-medium px-5 py-2.5 rounded-lg bg-white text-black hover:bg-gray-100 transition-all">
               <span className="relative z-10 flex items-center gap-2">Get API Key <ArrowRight size={16} /></span>
             </button>
           </div>
