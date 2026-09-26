@@ -37,12 +37,12 @@ export default function TermsOfService() {
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-4">3. Service Availability (SLA)</h2>
-            <p>While we strive for 99.9% uptime, Kian AgentNet is provided on an "as is" and "as available" basis. We are not liable for any downtime caused by third-party LLM providers (e.g., Google Gemini outages) or underlying infrastructure.</p>
+            <p>While we strive for 99.9% uptime, Kian AgentNet is provided on an &quot;as is&quot; and &quot;as available&quot; basis. We are not liable for any downtime caused by third-party LLM providers (e.g., Google Gemini outages) or underlying infrastructure.</p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-4">4. Account Termination</h2>
-            <p>We reserve the right to suspend or terminate API access immediately without notice if we detect abuse, violation of target websites' terms, or non-payment of subscription fees.</p>
+            <p>We reserve the right to suspend or terminate API access immediately without notice if we detect abuse, violation of target websites&apos; terms, or non-payment of subscription fees.</p>
           </section>
         </div>
       </div>
