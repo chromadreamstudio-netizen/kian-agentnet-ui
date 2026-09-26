@@ -9,8 +9,7 @@ import {
   CreditCard, 
   Activity, 
   Copy, 
-  Check, 
-  BookOpen, 
+  Check,
   Zap,
   LogOut,
   Loader2
