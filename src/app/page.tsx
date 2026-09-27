@@ -15,7 +15,8 @@ import {
   X,
   Globe,
   Database,
-  CheckCircle2
+  CheckCircle2,
+  Server
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -218,7 +219,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Section */}
+      {/* Pricing Section - 3 Tiers */}
       <section id="pricing" className="py-24 relative border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -228,26 +229,32 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Plan */}
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-start">
+            
+            {/* Starter Plan */}
             <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="bg-kian-800/30 p-8 rounded-3xl border border-white/5 flex flex-col"
             >
               <div className="mb-8">
-                <span className="text-kian-glow text-sm font-semibold tracking-wider uppercase">Hobby</span>
+                <span className="text-kian-glow text-sm font-semibold tracking-wider uppercase">Starter</span>
                 <div className="mt-4 flex items-baseline gap-2">
                   <span className="text-4xl font-extrabold">$0</span>
-                  <span className="text-gray-400">/ forever</span>
+                  <span className="text-gray-400">/ month</span>
                 </div>
-                <p className="mt-4 text-gray-400 text-sm">Perfect for testing and small agent deployments.</p>
+                <p className="mt-4 text-gray-400 text-sm h-10">Perfect for testing the API and personal projects.</p>
               </div>
               <ul className="space-y-4 mb-8 flex-1">
-                {["100 Free API Credits", "Interactive Protocol Playground", "Community Support", "Standard Rate Limits"].map((item, i) => (
+                {[
+                  "50 API Credits / month", 
+                  "Standard JSON Extraction", 
+                  "1 Request / second limit", 
+                  "Email Support"
+                ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm text-gray-300">
-                    <CheckCircle2 size={18} className="text-kian-glow" /> {item}
+                    <CheckCircle2 size={18} className="text-kian-glow shrink-0" /> {item}
                   </li>
                 ))}
               </ul>
@@ -258,10 +265,11 @@ export default function LandingPage() {
 
             {/* Pro Plan */}
             <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-gradient-to-b from-kian-brand/10 to-transparent p-8 rounded-3xl border border-kian-brand/30 relative flex flex-col"
+              transition={{ delay: 0.1 }}
+              className="bg-gradient-to-b from-kian-brand/10 to-transparent p-8 rounded-3xl border border-kian-brand/30 relative flex flex-col md:-translate-y-4 shadow-2xl shadow-kian-brand/10"
             >
               <div className="absolute top-0 right-8 -translate-y-1/2 bg-kian-brand text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                 Most Popular
@@ -269,22 +277,67 @@ export default function LandingPage() {
               <div className="mb-8">
                 <span className="text-kian-brand text-sm font-semibold tracking-wider uppercase">Pro Tier</span>
                 <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold">$19</span>
+                  <span className="text-4xl font-extrabold">$19.99</span>
                   <span className="text-gray-400">/ month</span>
                 </div>
-                <p className="mt-4 text-gray-400 text-sm">For production-grade AI agents requiring high volume.</p>
+                <p className="mt-4 text-gray-400 text-sm h-10">For startups and active automation workflows.</p>
               </div>
               <ul className="space-y-4 mb-8 flex-1">
-                {["50,000 API Credits / Month", "Priority Gateway Routing", "Fast Extraction Speed", "24/7 Priority Support"].map((item, i) => (
+                {[
+                  "10,000 API Credits / month", 
+                  "Custom JSON Schemas", 
+                  "On-the-fly Translation", 
+                  "5 Requests / second limit",
+                  "Standard Webhook Notifications"
+                ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm text-gray-300">
-                    <CheckCircle2 size={18} className="text-kian-brand" /> {item}
+                    <CheckCircle2 size={18} className="text-kian-brand shrink-0" /> {item}
                   </li>
                 ))}
               </ul>
-              <button onClick={() => handleAuthNavigation('/dashboard')} className="w-full py-3 rounded-xl bg-kian-brand hover:bg-blue-500 text-white font-bold transition-all shadow-lg shadow-kian-brand/20">
-                Upgrade to Pro
-              </button>
+              <a href="https://kian-agentnet1.lemonsqueezy.com/checkout/buy/5a748b53-e93b-4631-bb4c-3d3d7c6abe84" target="_blank" rel="noopener noreferrer" className="w-full py-3 rounded-xl bg-kian-brand hover:bg-blue-500 text-white font-bold transition-all shadow-lg shadow-kian-brand/20 flex items-center justify-center gap-2">
+                Upgrade to Pro <ArrowRight size={18} />
+              </a>
             </motion.div>
+
+            {/* Scale Plan */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="bg-kian-800/30 p-8 rounded-3xl border border-white/5 flex flex-col"
+            >
+              <div className="mb-8">
+                <span className="text-purple-400 text-sm font-semibold tracking-wider uppercase">Scale</span>
+                <div className="mt-4 flex items-baseline gap-2">
+                  <span className="text-4xl font-extrabold">$79.99</span>
+                  <span className="text-gray-400">/ month</span>
+                </div>
+                <p className="mt-4 text-gray-400 text-sm h-10">For serious data operations and high-volume limits.</p>
+              </div>
+              <ul className="space-y-4 mb-8 flex-1">
+                <li className="flex items-center gap-3 text-sm text-gray-300">
+                  <CheckCircle2 size={18} className="text-purple-400 shrink-0" /> 50,000 API Credits / month
+                </li>
+                <li className="flex items-center gap-3 text-sm text-gray-300">
+                  <Shield size={18} className="text-emerald-400 shrink-0" /> Anti-Bot & JS Engine
+                </li>
+                <li className="flex items-center gap-3 text-sm text-gray-300">
+                  <Server size={18} className="text-emerald-400 shrink-0" /> Batch URL Processing
+                </li>
+                <li className="flex items-center gap-3 text-sm text-gray-300">
+                  <Zap size={18} className="text-emerald-400 shrink-0" /> Scheduled Tracker
+                </li>
+                <li className="flex items-center gap-3 text-sm text-gray-300">
+                  <CheckCircle2 size={18} className="text-purple-400 shrink-0" /> Priority Support
+                </li>
+              </ul>
+              <a href="https://kian-agentnet1.lemonsqueezy.com/checkout/buy/6a2d3e58-821d-4863-bd7e-a65e695b5d3d" target="_blank" rel="noopener noreferrer" className="w-full py-3 rounded-xl bg-white hover:bg-gray-200 text-black font-bold transition-all flex items-center justify-center text-center">
+                Get Scale
+              </a>
+            </motion.div>
+
           </div>
         </div>
       </section>
