@@ -4,10 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { 
   Zap, ArrowRight, Terminal, Shield, Cpu, Activity, 
-  ChevronDown, Sparkles
+  ChevronDown, Command
 } from "lucide-react";
 
-export default function LandingPage() {
+export default function RaycastStyleLandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const toggleFaq = (index: number) => {
@@ -17,203 +17,184 @@ export default function LandingPage() {
   const faqs = [
     {
       q: "How does Kian AgentNet handle authentication?",
-      a: "AgentNet uses high-entropy cryptographic API keys (`sk_kian_...`) attached to your headers. Every request is verified via Edge infrastructure in real-time with zero performance overhead."
+      a: "AgentNet uses high-entropy cryptographic API keys (`sk_kian_...`) attached to your headers. Every request is verified via Edge infrastructure in real-time."
     },
     {
       q: "What happens when I exhaust my free credits?",
-      a: "On the Free Tier (Hobby), you receive 100 API credits. Once depleted, you can instantly upgrade to the Pro Tier via Lemon Squeezy to unlock 50,000 monthly credits and unthrottled bandwidth."
+      a: "On the Free Tier, you receive 100 API credits. Upgrade to Pro via Lemon Squeezy to unlock 50,000 monthly credits and unthrottled bandwidth."
     },
     {
       q: "Can I integrate Kian AgentNet with Python and Next.js?",
       a: "Yes! AgentNet exposes standard REST endpoints compatible with standard HTTP client libraries in Python, TypeScript, Node.js, and cURL."
-    },
-    {
-      q: "Is there an uptime SLA for enterprise agents?",
-      a: "Our Edge gateway features a 99.99% operational uptime SLA with automated fallback nodes distributed globally for sub-second responses."
     }
   ];
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-white font-sans selection:bg-blue-500/30 overflow-x-hidden">
+    <div className="min-h-screen bg-[#040506] text-white font-sans selection:bg-[#ff6363]/30 overflow-x-hidden">
       
-      {/* Background Glow Effects */}
+      {/* Raycast Dramatic Hero Ambient Glow */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[60rem] h-[35rem] bg-gradient-to-b from-blue-600/20 via-indigo-500/10 to-transparent rounded-full filter blur-[140px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[35rem] h-[35rem] bg-purple-600/10 rounded-full filter blur-[140px]" />
+        <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[50rem] h-[30rem] bg-gradient-to-b from-[#ff6363]/15 via-[#143ca3]/20 to-transparent rounded-full filter blur-[120px]" />
       </div>
 
-      {/* Navbar */}
-      <nav className="border-b border-white/10 bg-[#07090e]/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
-              <Zap size={18} className="text-white fill-white" />
+      {/* Floating Glass Navigation Bar */}
+      <div className="sticky top-6 z-50 px-4 max-w-5xl mx-auto">
+        <nav className="border border-[#363739] bg-[#040506]/70 backdrop-blur-2xl rounded-full px-6 h-12 flex items-center justify-between shadow-2xl">
+          <Link href="/" className="flex items-center gap-2 group">
+            {/* Coral Diamond Raycast Logo Mark */}
+            <div className="w-5 h-5 bg-[#ff6363] rotate-45 flex items-center justify-center rounded-[2px] shadow-sm shadow-[#ff6363]/50">
+              <div className="w-2 h-2 bg-[#040506] -rotate-45" />
             </div>
-            <span className="font-extrabold text-xl tracking-tight text-white">
-              KIAN<span className="text-blue-500 font-normal">AgentNet</span>
+            <span className="font-semibold text-sm tracking-tight text-white ml-1">
+              KIAN <span className="text-[#9c9c9d] font-normal">AgentNet</span>
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8 text-sm text-gray-400 font-medium">
+          <div className="hidden md:flex items-center gap-6 text-xs text-[#9c9c9d] font-medium">
             <a href="#features" className="hover:text-white transition-colors">Features</a>
             <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
             <Link href="/about" className="hover:text-white transition-colors">About</Link>
             <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm text-gray-300 hover:text-white transition-colors font-medium">
+          <div className="flex items-center gap-3">
+            <Link href="/login" className="text-xs text-[#9c9c9d] hover:text-white transition-colors font-medium">
               Log In
             </Link>
+            {/* Raycast Neutral Filled Action Button */}
             <Link 
               href="/signup" 
-              className="text-sm px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-all shadow-md shadow-blue-600/20 font-semibold"
+              className="text-xs px-3 py-1.5 bg-[#e6e6e6] hover:bg-white text-[#454647] font-semibold rounded-md transition-all shadow-sm"
             >
               Get Started
             </Link>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </div>
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 pt-20 pb-20 flex flex-col items-center text-center relative">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-8 backdrop-blur-md">
-          <Sparkles size={14} className="animate-pulse" />
-          <span>Next-Gen AI Agent Gateway v1.0</span>
+      <section className="max-w-5xl mx-auto px-6 pt-24 pb-20 flex flex-col items-center text-center relative">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#1b1c1e] border border-[#363739] text-[#9c9c9d] text-xs font-mono mb-8">
+          <span className="w-2 h-2 rounded-full bg-[#ff6363] animate-pulse" />
+          <span>v1.04.21 · Edge Gateway Protocol</span>
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-black tracking-tight max-w-4xl leading-[1.1] mb-6">
-          The High-Performance Gateway for <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400">
-            Autonomous AI Agents
+        {/* 56px Inter 400 Headline (Raycast Anti-Convention Signature) */}
+        <h1 className="text-4xl md:text-[56px] font-normal tracking-[0.22px] leading-[1.17] max-w-3xl mb-6 text-white">
+          Your shortcut to <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#e6e6e6] to-[#9c9c9d]">
+            autonomous AI agents.
           </span>
         </h1>
 
-        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mb-10 leading-relaxed font-normal">
-          Manage API authentication, extract structured web intelligence, and orchestrate agent networks with cryptographic security and real-time token tracking.
+        <p className="text-base text-[#9c9c9d] max-w-xl mb-10 leading-relaxed font-normal">
+          Manage API authentication, extract structured web data, and deploy cryptographic agent workflows in seconds.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-16">
+        {/* Action Button Group */}
+        <div className="flex flex-col sm:flex-row items-center gap-3 mb-6">
           <Link 
             href="/signup" 
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-xl shadow-blue-600/25 group"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#e6e6e6] hover:bg-white text-[#454647] rounded-lg text-sm font-medium transition-all shadow-md"
           >
-            <span>Start Building Free</span>
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            <span>Download Console</span>
+            <ArrowRight size={15} />
           </Link>
           <Link 
             href="/dashboard" 
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl font-bold transition-all backdrop-blur-md"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#07080a] border border-[#363739] text-white hover:border-[#6a6b6c] rounded-lg text-sm font-medium transition-all raycast-key-shadow"
           >
-            <Terminal size={18} className="text-gray-400" />
-            <span>Developer Console</span>
+            <Command size={15} className="text-[#9c9c9d]" />
+            <span>Open Playground</span>
           </Link>
         </div>
 
-        {/* Hero Interactive Terminal Graphic */}
-        <div className="w-full max-w-5xl rounded-2xl border border-white/10 bg-[#0d111a]/90 backdrop-blur-2xl shadow-2xl overflow-hidden text-left relative group">
-          <div className="absolute -top-24 -left-24 w-48 h-48 bg-blue-500/20 rounded-full filter blur-3xl pointer-events-none group-hover:bg-blue-500/30 transition-all" />
-          
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/5">
+        {/* Technical Micro-Metadata Line (Geist Mono) */}
+        <div className="font-mono text-xs text-[#6a6b6c] flex items-center gap-2 mb-16">
+          <span>v1.104.21</span>
+          <span>|</span>
+          <span>macOS 13+ / Linux</span>
+          <span>|</span>
+          <span className="text-[#9c9c9d]">curl -sSL https://kian.net/install</span>
+        </div>
+
+        {/* Tactile App Window Container */}
+        <div className="w-full max-w-4xl rounded-2xl raycast-card border border-[#363739] p-2 text-left relative overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-[#363739]/50 bg-[#040506]">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/80" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-              <div className="w-3 h-3 rounded-full bg-green-500/80" />
-              <span className="text-xs text-gray-400 font-mono ml-2">agentnet-protocol-stream.ts</span>
+              <div className="w-3 h-3 rounded-full bg-[#1b1c1e] border border-[#363739]" />
+              <div className="w-3 h-3 rounded-full bg-[#1b1c1e] border border-[#363739]" />
+              <div className="w-3 h-3 rounded-full bg-[#1b1c1e] border border-[#363739]" />
+              <span className="text-xs font-mono text-[#6a6b6c] ml-2">agentnet-session</span>
             </div>
-            <div className="flex items-center gap-2 text-xs text-emerald-400 font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              CONNECTED [200 OK]
-            </div>
+            <span className="text-xs font-mono text-[#ff6363]">● ACTIVE</span>
           </div>
 
-          <div className="p-6 font-mono text-sm leading-relaxed overflow-x-auto text-gray-300 space-y-3">
-            <div className="flex items-center gap-2 text-gray-500">
-              <span>{"// Authenticating Agent Key with Kian Core"}</span>
-            </div>
-            <div className="text-blue-400">
-              <span className="text-purple-400">const</span> agent = <span className="text-purple-400">new</span> KianAgentNet(&#123; apiKey: <span className="text-emerald-300">&quot;sk_kian_99f28a7c...&quot;</span> &#125;);
-            </div>
-            <div className="text-gray-300">
-              <span className="text-purple-400">const</span> session = <span className="text-purple-400">await</span> agent.extract(&#123; target: <span className="text-emerald-300">&quot;https://api.kian.net/data&quot;</span> &#125;);
-            </div>
-            <div className="p-4 rounded-xl bg-[#080a0f] border border-white/5 text-xs text-emerald-400 mt-4 space-y-1">
-              <p>&#123;</p>
-              <p className="pl-4">&quot;status&quot;: &quot;success&quot;,</p>
-              <p className="pl-4">&quot;latency_ms&quot;: 142,</p>
-              <p className="pl-4">&quot;tokens_remaining&quot;: 49850,</p>
-              <p className="pl-4">&quot;payload&quot;: &#123; &quot;agent_id&quot;: &quot;ag_009&quot;, &quot;state&quot;: &quot;verified&quot; &#125;</p>
-              <p>&#125;</p>
+          <div className="p-6 font-mono text-xs leading-relaxed text-[#9c9c9d] space-y-2 bg-[#07080a]">
+            <div><span className="text-[#ff6363]">$</span> agentnet init --key <span className="text-white">&quot;sk_kian_99f28a...&quot;</span></div>
+            <div className="text-[#6a6b6c]">// Connecting to Edge Nodes...</div>
+            <div className="p-3 rounded-lg bg-[#111214] border border-[#363739] text-[#e6e6e6]">
+              &#123; &quot;status&quot;: 200, &quot;gateway&quot;: &quot;kian-edge-01&quot;, &quot;latency&quot;: &quot;12ms&quot; &#125;
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section id="features" className="max-w-7xl mx-auto px-6 py-24 border-t border-white/5">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-extrabold mb-4">Built for Scale & Security</h2>
-          <p className="text-gray-400 max-w-xl mx-auto">Everything you need to deploy, protect, and track AI interactions.</p>
+      {/* Feature Section */}
+      <section id="features" className="max-w-5xl mx-auto px-6 py-20 border-t border-[#363739]">
+        <div className="mb-12">
+          <h2 className="text-2xl font-normal text-white mb-2">Built for Performance</h2>
+          <p className="text-sm text-[#9c9c9d]">Engineered with hairline precision and zero overhead.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-blue-500/30 transition-all group">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-6 group-hover:scale-110 transition-transform">
-              <Shield size={24} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-6 rounded-2xl raycast-card hover:border-[#6a6b6c] transition-all">
+            <div className="w-10 h-10 rounded-full bg-[#1b1c1e] flex items-center justify-center text-white mb-4">
+              <Shield size={18} />
             </div>
-            <h3 className="text-xl font-bold mb-3">Cryptographic Keys</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Issue instantly revocable API keys encrypted at rest. Isolated workspace permissions ensure zero data leakage.
+            <h3 className="text-base font-medium text-white mb-2">Cryptographic Keys</h3>
+            <p className="text-xs text-[#9c9c9d] leading-relaxed">
+              High-entropy API keys encrypted at rest with workspace isolation.
             </p>
           </div>
 
-          <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all group">
-            <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 mb-6 group-hover:scale-110 transition-transform">
-              <Activity size={24} />
+          <div className="p-6 rounded-2xl raycast-card hover:border-[#6a6b6c] transition-all">
+            <div className="w-10 h-10 rounded-full bg-[#1b1c1e] flex items-center justify-center text-[#ff6363] mb-4">
+              <Activity size={18} />
             </div>
-            <h3 className="text-xl font-bold mb-3">Real-Time Telemetry</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Monitor extraction throughput, success ratios, and exact token consumption directly from your developer dashboard.
+            <h3 className="text-base font-medium text-white mb-2">Real-Time Telemetry</h3>
+            <p className="text-xs text-[#9c9c9d] leading-relaxed">
+              Track throughput and exact token consumption from your dashboard.
             </p>
           </div>
 
-          <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all group">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-110 transition-transform">
-              <Cpu size={24} />
+          <div className="p-6 rounded-2xl raycast-card hover:border-[#6a6b6c] transition-all">
+            <div className="w-10 h-10 rounded-full bg-[#1b1c1e] flex items-center justify-center text-white mb-4">
+              <Cpu size={18} />
             </div>
-            <h3 className="text-xl font-bold mb-3">Sub-Second Latency</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Optimized HTTP proxy nodes built on global Edge networks ensure instant responses for your autonomous pipelines.
+            <h3 className="text-base font-medium text-white mb-2">Edge Proxy</h3>
+            <p className="text-xs text-[#9c9c9d] leading-relaxed">
+              Sub-second response times powered by distributed global nodes.
             </p>
           </div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="max-w-4xl mx-auto px-6 py-24 border-t border-white/5">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-4">Frequently Asked Questions</h2>
-          <p className="text-gray-400">Everything you need to know about the platform and integration.</p>
-        </div>
-
-        <div className="space-y-4">
+      <section id="faq" className="max-w-3xl mx-auto px-6 py-20 border-t border-[#363739]">
+        <h2 className="text-2xl font-normal text-white mb-8 text-center">Questions & Answers</h2>
+        <div className="space-y-3">
           {faqs.map((faq, idx) => (
-            <div 
-              key={idx} 
-              className="rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden transition-all"
-            >
+            <div key={idx} className="rounded-xl bg-[#07080a] border border-[#363739] overflow-hidden">
               <button
                 onClick={() => toggleFaq(idx)}
-                className="w-full p-6 text-left flex justify-between items-center gap-4 focus:outline-none"
+                className="w-full p-4 text-left flex justify-between items-center text-sm font-medium text-white focus:outline-none"
               >
-                <span className="font-semibold text-lg text-gray-200">{faq.q}</span>
-                <ChevronDown 
-                  size={20} 
-                  className={`text-gray-400 transition-transform duration-300 ${openFaq === idx ? 'rotate-180 text-blue-400' : ''}`} 
-                />
+                <span>{faq.q}</span>
+                <ChevronDown size={16} className={`text-[#6a6b6c] transition-transform ${openFaq === idx ? 'rotate-180 text-white' : ''}`} />
               </button>
               {openFaq === idx && (
-                <div className="px-6 pb-6 text-gray-400 text-sm leading-relaxed border-t border-white/5 pt-4">
+                <div className="px-4 pb-4 text-xs text-[#9c9c9d] leading-relaxed border-t border-[#363739]/50 pt-3">
                   {faq.a}
                 </div>
               )}
@@ -222,51 +203,46 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Complete Structural Footer */}
-      <footer className="border-t border-white/10 bg-[#05070a] pt-16 pb-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-white/10">
+      {/* Footer with All Legal Pages */}
+      <footer className="border-t border-[#363739] bg-[#040506] pt-16 pb-12">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-[#363739]">
             
-            {/* Brand Column */}
-            <div className="space-y-4 md:col-span-1">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-                  <Zap size={16} className="text-white fill-white" />
-                </div>
-                <span className="font-bold text-xl tracking-tight text-white">
-                  KIAN<span className="text-blue-500 font-normal">AgentNet</span>
-                </span>
+            {/* Brand */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-[#ff6363] rotate-45 rounded-[2px]" />
+                <span className="font-semibold text-sm text-white">KIAN AgentNet</span>
               </div>
-              <p className="text-gray-400 text-xs leading-relaxed">
-                High-performance developer infrastructure for autonomous AI agents, API authentication, and web data extraction.
+              <p className="text-xs text-[#6a6b6c] leading-relaxed">
+                Developer infrastructure for autonomous AI agents.
               </p>
             </div>
 
-            {/* Product Column */}
+            {/* Product */}
             <div>
-              <h4 className="text-white text-sm font-semibold mb-4 tracking-wider uppercase">Product</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <h4 className="text-xs font-semibold text-[#9c9c9d] uppercase mb-3 tracking-wider">Product</h4>
+              <ul className="space-y-2 text-xs text-[#6a6b6c]">
                 <li><Link href="/pricing" className="hover:text-white transition">Pricing Plans</Link></li>
-                <li><Link href="/playground" className="hover:text-white transition">API Playground</Link></li>
-                <li><Link href="/dashboard" className="hover:text-white transition">Developer Console</Link></li>
-                <li><a href="#features" className="hover:text-white transition">Features</a></li>
+                <li><Link href="/playground" className="hover:text-white transition">Playground</Link></li>
+                <li><Link href="/dashboard" className="hover:text-white transition">Console</Link></li>
               </ul>
             </div>
 
-            {/* Company Column */}
+            {/* Company */}
             <div>
-              <h4 className="text-white text-sm font-semibold mb-4 tracking-wider uppercase">Company</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <h4 className="text-xs font-semibold text-[#9c9c9d] uppercase mb-3 tracking-wider">Company</h4>
+              <ul className="space-y-2 text-xs text-[#6a6b6c]">
                 <li><Link href="/about" className="hover:text-white transition">About Us</Link></li>
                 <li><Link href="/login" className="hover:text-white transition">Sign In</Link></li>
                 <li><Link href="/signup" className="hover:text-white transition">Create Account</Link></li>
               </ul>
             </div>
 
-            {/* Legal Column */}
+            {/* Legal Pages */}
             <div>
-              <h4 className="text-white text-sm font-semibold mb-4 tracking-wider uppercase">Legal</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <h4 className="text-xs font-semibold text-[#9c9c9d] uppercase mb-3 tracking-wider">Legal</h4>
+              <ul className="space-y-2 text-xs text-[#6a6b6c]">
                 <li><Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link></li>
                 <li><Link href="/terms" className="hover:text-white transition">Terms of Service</Link></li>
                 <li><Link href="/refund" className="hover:text-white transition">Refund Policy</Link></li>
@@ -275,10 +251,10 @@ export default function LandingPage() {
 
           </div>
 
-          <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
-            <p>&copy; {new Date().getFullYear()} Kian AgentNet Infrastructure. All rights reserved.</p>
+          <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-mono text-[#6a6b6c]">
+            <p>&copy; {new Date().getFullYear()} Kian AgentNet, Inc.</p>
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ff6363]"></span>
               <span>All Systems Operational</span>
             </div>
           </div>
