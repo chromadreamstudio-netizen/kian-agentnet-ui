@@ -56,6 +56,8 @@ export default function LandingPage() {
 
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-400 font-medium">
             <a href="#features" className="hover:text-white transition-colors">Features</a>
+            <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
+            <Link href="/about" className="hover:text-white transition-colors">About</Link>
             <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
           </div>
 
@@ -220,26 +222,66 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/10 bg-[#05070a] py-12">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
-              <Zap size={14} className="text-white fill-white" />
+      {/* Complete Structural Footer */}
+      <footer className="border-t border-white/10 bg-[#05070a] pt-16 pb-12">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-white/10">
+            
+            {/* Brand Column */}
+            <div className="space-y-4 md:col-span-1">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                  <Zap size={16} className="text-white fill-white" />
+                </div>
+                <span className="font-bold text-xl tracking-tight text-white">
+                  KIAN<span className="text-blue-500 font-normal">AgentNet</span>
+                </span>
+              </div>
+              <p className="text-gray-400 text-xs leading-relaxed">
+                High-performance developer infrastructure for autonomous AI agents, API authentication, and web data extraction.
+              </p>
             </div>
-            <span className="font-bold text-lg">KIAN AgentNet</span>
+
+            {/* Product Column */}
+            <div>
+              <h4 className="text-white text-sm font-semibold mb-4 tracking-wider uppercase">Product</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/pricing" className="hover:text-white transition">Pricing Plans</Link></li>
+                <li><Link href="/playground" className="hover:text-white transition">API Playground</Link></li>
+                <li><Link href="/dashboard" className="hover:text-white transition">Developer Console</Link></li>
+                <li><a href="#features" className="hover:text-white transition">Features</a></li>
+              </ul>
+            </div>
+
+            {/* Company Column */}
+            <div>
+              <h4 className="text-white text-sm font-semibold mb-4 tracking-wider uppercase">Company</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/about" className="hover:text-white transition">About Us</Link></li>
+                <li><Link href="/login" className="hover:text-white transition">Sign In</Link></li>
+                <li><Link href="/signup" className="hover:text-white transition">Create Account</Link></li>
+              </ul>
+            </div>
+
+            {/* Legal Column */}
+            <div>
+              <h4 className="text-white text-sm font-semibold mb-4 tracking-wider uppercase">Legal</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-white transition">Terms of Service</Link></li>
+                <li><Link href="/refund" className="hover:text-white transition">Refund Policy</Link></li>
+              </ul>
+            </div>
+
           </div>
 
-          <div className="flex items-center gap-6 text-sm text-gray-400">
-            <Link href="/login" className="hover:text-white transition">Dashboard</Link>
-            <Link href="/signup" className="hover:text-white transition">Sign Up</Link>
-            <a href="#features" className="hover:text-white transition">Features</a>
-            <a href="#faq" className="hover:text-white transition">FAQ</a>
+          <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+            <p>&copy; {new Date().getFullYear()} Kian AgentNet Infrastructure. All rights reserved.</p>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>All Systems Operational</span>
+            </div>
           </div>
-
-          <p className="text-xs text-gray-500">
-            &copy; {new Date().getFullYear()} Kian AgentNet Infrastructure. All rights reserved.
-          </p>
         </div>
       </footer>
 
