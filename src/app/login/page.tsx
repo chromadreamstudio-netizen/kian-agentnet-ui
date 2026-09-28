@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -56,10 +57,22 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-gray-100 flex items-center justify-center p-6 font-sans">
+    <div className="min-h-screen bg-[#0a0a0a] text-gray-100 flex flex-col items-center justify-center p-6 font-sans relative">
+      
+      {/* زر العودة المباشرة إلى صفحة الهبوط */}
+      <div className="w-full max-w-md mb-4 flex justify-start">
+        <Link 
+          href="/" 
+          className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors py-1 px-3 rounded-lg hover:bg-white/5 border border-transparent hover:border-gray-800"
+        >
+          <ArrowLeft size={16} />
+          <span>Back to Home</span>
+        </Link>
+      </div>
+
       <div className="w-full max-w-md bg-[#111] p-8 rounded-2xl border border-gray-800 shadow-2xl">
         <div className="text-center mb-8">
-          <Link href="/" className="text-2xl font-black tracking-tighter">
+          <Link href="/" className="text-2xl font-black tracking-tighter inline-block hover:opacity-80 transition-opacity">
             KIAN<span className="text-blue-500 font-light">AgentNet</span>
           </Link>
           <h1 className="text-2xl font-bold mt-6 mb-2">Welcome back</h1>
