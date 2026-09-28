@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   /* Raycast Color Tokens */
@@ -26,7 +28,6 @@ body {
   font-family: var(--font-inter);
 }
 
-/* Raycast Key Tactile Shadow Effect */
 .raycast-key-shadow {
   box-shadow: rgba(255, 255, 255, 0.05) 0px 1px 0px 0px inset,
               rgba(255, 255, 255, 0.25) 0px 0px 0px 1px,
