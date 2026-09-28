@@ -25,7 +25,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   
   const [apiKey, setApiKey] = useState("");
-  const [credits, setCredits] = useState(100);
+  // تم التعديل إلى 50 رصيد بدلاً من 100
+  const [credits, setCredits] = useState(50);
   const [userId, setUserId] = useState("");
 
   useEffect(() => {
@@ -56,7 +57,7 @@ export default function Dashboard() {
           .insert([{ 
             user_id: currentUserId, 
             api_key: newApiKey,
-            credits: 100,
+            credits: 50, // تم التعديل إلى 50 عند إنشاء حساب جديد
             is_active: true
           }])
           .select()
@@ -67,7 +68,7 @@ export default function Dashboard() {
 
       if (data) {
         setApiKey(data.api_key);
-        setCredits(data.credits ?? 100);
+        setCredits(data.credits ?? 50); // تم التعديل إلى 50
       }
       
       setLoading(false);
@@ -98,6 +99,13 @@ export default function Dashboard() {
   }
 
   const checkoutUrl = `https://kian-agentnet1.lemonsqueezy.com/checkout/buy/cc334133-ff5c-4eee-8fca-99e66a2a3c2c?checkout[custom][user_id]=${userId}`;
+
+  // تحديد اسم الباقة بناءً على الرصيد ليتوافق مع صفحة الأسعار
+  const getPlanName = () => {
+    if (credits >= 50000) return "Scale Tier";
+    if (credits > 50) return "Pro Tier";
+    return "Starter (Free Tier)";
+  };
 
   return (
     <div className="min-h-screen bg-kian-900 text-white font-sans selection:bg-kian-brand/30 overflow-x-hidden">
@@ -164,14 +172,14 @@ export default function Dashboard() {
               <h3 className="font-semibold text-gray-200">Current Plan</h3>
             </div>
             <div className="text-2xl font-extrabold text-white mb-1">
-              {credits > 1000 ? "Pro Tier" : "Hobby (Free Tier)"}
+              {getPlanName()}
             </div>
             <p className="text-sm text-gray-400 mb-6">Upgrade via Lemon Squeezy for higher limits.</p>
             <a 
               href={checkoutUrl}
               className="w-full flex items-center justify-center gap-2 py-3 bg-kian-brand hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-kian-brand/20"
             >
-              Upgrade Plan ($19) <ArrowRight size={16} />
+              Upgrade to Pro ($19.99) <ArrowRight size={16} />
             </a>
           </div>
         </div>
