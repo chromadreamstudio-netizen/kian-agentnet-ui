@@ -15,23 +15,55 @@ import {
   X,
   Globe,
   Database,
-  HelpCircle
+  HelpCircle,
+  LayoutDashboard,
+  LogOut,
+  Lock
 } from "lucide-react";
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    // التحقق من حالة تسجيل الدخول (يمكن ربطها لاحقاً بـ Supabase)
+    const checkAuthStatus = () => {
+      // هنا نتحقق من وجود جلسة (Session) وهمية مؤقتاً
+      // في المستقبل، سيتم استبدال هذا بفحص التوكن الخاص بـ Supabase
+      const hasSession = localStorage.getItem("kian_session") === "true";
+      setIsLoggedIn(hasSession);
+    };
+    
+    checkAuthStatus();
+
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleAuthNavigation = (path: string) => {
+  // دالة ذكية للتعامل مع الروابط المحمية (مثل Playground)
+  const handleProtectedAction = (path: string) => {
+    if (isLoggedIn) {
+      router.push(path);
+    } else {
+      // إذا لم يكن مسجلاً، وجهه لصفحة التسجيل مع تنبيه أو تخزين مسار العودة
+      router.push('/signup');
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("kian_session");
+    // مسح الكوكيز إن وجدت
     document.cookie = "kian-session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-    router.push(path);
+    setIsLoggedIn(false);
+    router.push('/');
+  };
+
+  const handleLoginDemo = () => {
+    // دالة مؤقتة لتجربة الدخول (اربطها لاحقاً بصفحة الدخول الحقيقية)
+    router.push('/login');
   };
 
   const faqs = [
@@ -60,14 +92,13 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-kian-900 text-white font-sans selection:bg-kian-brand/30 overflow-x-hidden">
       
-      {/* Background Effects */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-kian-brand/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob" />
         <div className="absolute top-[20%] right-[-10%] w-[35rem] h-[35rem] bg-kian-accent/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000" />
       </div>
 
       {/* Navbar */}
-      <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-kian-900/80 backdrop-blur-xl border-b border-white/5 py-3' : 'bg-transparent py-5'}`}>
+      <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-kian-900/90 backdrop-blur-xl border-b border-white/5 py-3 shadow-2xl' : 'bg-transparent py-5'}`}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-kian-brand to-kian-accent flex items-center justify-center shadow-lg shadow-kian-brand/20 group-hover:shadow-kian-brand/40 transition-all duration-300">
@@ -80,26 +111,47 @@ export default function LandingPage() {
 
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
             <a href="#features" className="hover:text-white transition-colors">Features</a>
-            {/* تم تحديث رابط الأسعار للتوجه لصفحة مستقلة */}
             <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
             <Link href="/about" className="hover:text-white transition-colors">About Us</Link>
             <a href="mailto:hello@kian-agentnet.com" className="hover:text-white transition-colors">Contact</a>
+            
             <div className="w-px h-4 bg-gray-700"></div>
-            <Link href="/playground" className="flex items-center gap-2 text-kian-glow hover:text-white transition-colors">
+            
+            {/* زر الـ Playground معتمد على حالة التسجيل */}
+            <button 
+              onClick={() => handleProtectedAction('/playground')} 
+              className="flex items-center gap-2 text-kian-glow hover:text-white transition-colors"
+            >
+              {!isLoggedIn && <Lock size={12} className="opacity-50" />}
               <Sparkles size={14} /> Playground
-            </Link>
+            </button>
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <button onClick={() => handleAuthNavigation('/login')} className="text-sm font-medium px-4 py-2 text-gray-300 hover:text-white transition-colors">
-              Sign In
-            </button>
-            <button onClick={() => handleAuthNavigation('/signup')} className="text-sm font-medium px-4 py-2 text-kian-glow hover:text-white transition-colors border border-kian-brand/30 rounded-lg bg-kian-brand/10">
-              Sign Up
-            </button>
-            <button onClick={() => handleAuthNavigation('/signup')} className="relative group overflow-hidden text-sm font-medium px-5 py-2.5 rounded-lg bg-white text-black hover:bg-gray-100 transition-all">
-              <span className="relative z-10 flex items-center gap-2">Get API Key <ArrowRight size={16} /></span>
-            </button>
+            {isLoggedIn ? (
+              // هيدر المستخدم المسجل الدخول
+              <>
+                <Link href="/dashboard" className="text-sm font-medium px-4 py-2 text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                  <LayoutDashboard size={16} /> Dashboard
+                </Link>
+                <button onClick={handleLogout} className="text-sm font-medium px-4 py-2 border border-white/10 rounded-lg text-gray-400 hover:text-red-400 hover:border-red-400/50 hover:bg-red-400/10 transition-all flex items-center gap-2">
+                  <LogOut size={16} /> Log Out
+                </button>
+              </>
+            ) : (
+              // هيدر الزائر الجديد
+              <>
+                <button onClick={handleLoginDemo} className="text-sm font-medium px-4 py-2 text-gray-300 hover:text-white transition-colors">
+                  Sign In
+                </button>
+                <button onClick={() => router.push('/signup')} className="text-sm font-medium px-4 py-2 text-kian-glow hover:text-white transition-colors border border-kian-brand/30 rounded-lg bg-kian-brand/10">
+                  Sign Up
+                </button>
+                <button onClick={() => router.push('/signup')} className="relative group overflow-hidden text-sm font-medium px-5 py-2.5 rounded-lg bg-white text-black hover:bg-gray-100 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                  <span className="relative z-10 flex items-center gap-2">Get API Key <ArrowRight size={16} /></span>
+                </button>
+              </>
+            )}
           </div>
 
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-gray-400 hover:text-white">
@@ -131,18 +183,18 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <button 
-                onClick={() => handleAuthNavigation('/signup')}
+                onClick={() => isLoggedIn ? router.push('/dashboard') : router.push('/signup')}
                 className="px-8 py-4 rounded-xl bg-kian-brand hover:bg-blue-500 text-white font-bold transition-all shadow-lg shadow-kian-brand/25 hover:shadow-kian-brand/40 flex items-center justify-center gap-2"
               >
-                Start Building Free
+                {isLoggedIn ? 'Go to Dashboard' : 'Start Building Free'}
                 <ArrowRight size={18} />
               </button>
-              <Link 
-                href="/playground" 
+              <button 
+                onClick={() => handleProtectedAction('/playground')} 
                 className="px-8 py-4 rounded-xl border border-white/10 hover:bg-white/5 text-white font-semibold transition-all flex items-center justify-center gap-2"
               >
                 <Terminal size={18} /> View Playground
-              </Link>
+              </button>
             </div>
           </motion.div>
 
@@ -242,7 +294,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FAQ Section (Replaced Pricing) */}
+      {/* FAQ Section */}
       <section id="faq" className="py-24 relative border-t border-white/5">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -293,8 +345,9 @@ export default function LandingPage() {
           <div>
             <h4 className="text-white font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-sm text-gray-500">
-              <li><Link href="/playground" className="hover:text-white transition-colors">Playground</Link></li>
-              {/* تم تحديث رابط الفوتر */}
+              <li>
+                <button onClick={() => handleProtectedAction('/playground')} className="hover:text-white transition-colors">Playground</button>
+              </li>
               <li><Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
               <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
             </ul>
