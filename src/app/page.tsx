@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { 
-  Zap, ArrowRight, Terminal, Shield, Cpu, Activity, 
+  ArrowRight, Shield, Cpu, Activity, 
   ChevronDown, Command
 } from "lucide-react";
 
@@ -132,7 +132,7 @@ export default function RaycastStyleLandingPage() {
 
           <div className="p-6 font-mono text-xs leading-relaxed text-[#9c9c9d] space-y-2 bg-[#07080a]">
             <div><span className="text-[#ff6363]">$</span> agentnet init --key <span className="text-white">&quot;sk_kian_99f28a...&quot;</span></div>
-            <div className="text-[#6a6b6c]">// Connecting to Edge Nodes...</div>
+            <div className="text-[#6a6b6c]">{"// Connecting to Edge Nodes..."}</div>
             <div className="p-3 rounded-lg bg-[#111214] border border-[#363739] text-[#e6e6e6]">
               &#123; &quot;status&quot;: 200, &quot;gateway&quot;: &quot;kian-edge-01&quot;, &quot;latency&quot;: &quot;12ms&quot; &#125;
             </div>
