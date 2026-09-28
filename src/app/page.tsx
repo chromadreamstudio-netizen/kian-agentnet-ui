@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { 
-  Zap, ArrowRight, Terminal, Shield, Cpu, Key, Activity, 
-  ChevronDown, Code2, Lock, Sparkles, CheckCircle2, Globe 
+  Zap, ArrowRight, Terminal, Shield, Cpu, Activity, 
+  ChevronDown, Sparkles
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -36,13 +36,13 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#07090e] text-white font-sans selection:bg-blue-500/30 overflow-x-hidden">
       
-      {/* Glow Effects Background */}
+      {/* Background Glow Effects */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[60rem] h-[35rem] bg-gradient-to-b from-blue-600/20 via-indigo-500/10 to-transparent rounded-full filter blur-[140px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[35rem] h-[35rem] bg-purple-600/10 rounded-full filter blur-[140px]" />
       </div>
 
-      {/* Navigation Header */}
+      {/* Navbar */}
       <nav className="border-b border-white/10 bg-[#07090e]/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
@@ -56,7 +56,6 @@ export default function LandingPage() {
 
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-400 font-medium">
             <a href="#features" className="hover:text-white transition-colors">Features</a>
-            <a href="#playground" className="hover:text-white transition-colors">Architecture</a>
             <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
           </div>
 
