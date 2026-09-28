@@ -2,11 +2,10 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(req: NextRequest) {
-  // البحث عن ملف تعريف الارتباط الذي سنقوم بإنشائه عند تسجيل الدخول
   const isAuthenticated = req.cookies.get('kian-session');
   const { pathname } = req.nextUrl;
 
-  // حماية الداشبورد
+  // حماية لوحة التحكم
   if (pathname.startsWith('/dashboard')) {
     if (!isAuthenticated) {
       const loginUrl = req.nextUrl.clone();
@@ -15,7 +14,7 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  // منع المستخدم المسجل من رؤية صفحات تسجيل الدخول مجدداً
+  // توجيه المستخدم المسجل بعيداً عن صفحات الدخول والتسجيل
   if (pathname === '/login' || pathname === '/signup') {
     if (isAuthenticated) {
       const dashboardUrl = req.nextUrl.clone();

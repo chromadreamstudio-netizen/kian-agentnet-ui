@@ -1,130 +1,17 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
-import { 
-  Terminal, 
-  Key, 
-  CreditCard, 
-  Activity, 
-  Copy, 
-  Check,
-  Zap,
-  LogOut,
-  Loader2,
-  ArrowRight
-} from "lucide-react";
+import { Zap, ArrowRight, Terminal, Shield, Cpu } from "lucide-react";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-export default function Dashboard() {
-  const router = useRouter();
-  const [copied, setCopied] = useState(false);
-  const [loading, setLoading] = useState(true);
-  
-  const [apiKey, setApiKey] = useState("");
-  const [credits, setCredits] = useState(50);
-  const [userId, setUserId] = useState("");
-  const [planName, setPlanName] = useState("Hobby (Free Tier)");
-
-  useEffect(() => {
-    async function fetchOrInitializeApiKey() {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        router.push('/login');
-        return;
-      }
-
-      const currentUserId = session.user.id;
-      setUserId(currentUserId);
-
-      let { data } = await supabase
-        .from('api_keys')
-        .select('*')
-        .eq('user_id', currentUserId)
-        .maybeSingle();
-
-      // إنشاء مفتاح افتراضي للعميل الجديد برصيد 50 توكين
-      if (!data) {
-        const randomString = Array.from(crypto.getRandomValues(new Uint8Array(16)))
-          .map(b => b.toString(16).padStart(2, '0')).join('');
-        const newApiKey = `sk_kian_${randomString}`;
-
-        const { data: newData } = await supabase
-          .from('api_keys')
-          .insert([{ 
-            user_id: currentUserId, 
-            api_key: newApiKey,
-            credits: 50,
-            is_active: true
-          }])
-          .select()
-          .single();
-
-        if (newData) data = newData;
-      }
-
-      if (data) {
-        setApiKey(data.api_key);
-        const currentCredits = data.credits ?? 50;
-        setCredits(currentCredits);
-        
-        // تمييز باقة المستخدم بناءً على رصيد التوكينات
-        if (currentCredits >= 1000) {
-          setPlanName("Pro Tier");
-        } else {
-          setPlanName("Hobby (Free Tier)");
-        }
-      }
-      
-      setLoading(false);
-    }
-
-    fetchOrInitializeApiKey();
-  }, [router]);
-
-  const handleCopy = () => {
-    if (!apiKey) return;
-    navigator.clipboard.writeText(apiKey);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  // إصلاح ثغرة التوجيه بعد تسجيل الخروج
-  const handleSignOut = async () => {
-    document.cookie = "kian-session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-    await supabase.auth.signOut();
-    router.push('/'); // إعادة التوجيه إلى صفحة الهبوط الرئيسية بدلاً من login
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-kian-900 flex items-center justify-center text-white">
-        <Loader2 className="animate-spin w-8 h-8 text-kian-brand" />
-      </div>
-    );
-  }
-
-  const checkoutUrl = `https://kian-agentnet1.lemonsqueezy.com/checkout/buy/cc334133-ff5c-4eee-8fca-99e66a2a3c2c?checkout[custom][user_id]=${userId}`;
-
-  // حساب شريط التقدم Visual Progress
-  const maxCredits = planName === "Pro Tier" ? 50000 : 50;
-  const progressPercentage = Math.min((credits / maxCredits) * 100, 100);
-
+export default function LandingPage() {
   return (
     <div className="min-h-screen bg-kian-900 text-white font-sans selection:bg-kian-brand/30 overflow-x-hidden">
       
-      {/* تأثيرات الإضاءة الخلفية */}
+      {/* تأثيرات الإضاءة الخلفية (نفس المستخدمة في الداشبورد) */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-kian-brand/20 rounded-full mix-blend-screen filter blur-[120px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[35rem] h-[35rem] bg-kian-accent/10 rounded-full mix-blend-screen filter blur-[120px]" />
       </div>
 
+      {/* شريط التنقل (Navbar) */}
       <nav className="border-b border-white/5 bg-kian-900/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -134,134 +21,77 @@ export default function Dashboard() {
             <span className="font-extrabold text-xl tracking-tight text-white">Kian AgentNet</span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="mailto:hello@kian-agentnet.com" className="text-sm text-gray-400 hover:text-white transition-colors">Support</a>
-            <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">Home</Link>
-            <div className="h-4 w-px bg-white/10"></div>
-            <button 
-              onClick={handleSignOut}
-              className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-400 transition-colors cursor-pointer"
-            >
-              <LogOut size={16} /> Sign Out
-            </button>
+            <Link href="/login" className="text-sm text-gray-300 hover:text-white transition-colors font-medium">
+              Log In
+            </Link>
+            <Link href="/signup" className="text-sm px-5 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors border border-white/5 font-medium">
+              Sign Up
+            </Link>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="mb-10">
-          <h1 className="text-3xl font-extrabold tracking-tight mb-2">Welcome back, Developer 👋</h1>
-          <p className="text-gray-400 text-sm">Manage your API keys, monitor usage, and test the protocol.</p>
+      {/* القسم الرئيسي (Hero Section) */}
+      <main className="max-w-7xl mx-auto px-6 py-24 md:py-32 flex flex-col items-center text-center">
+        
+        {/* شارة التحديث */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-kian-brand/10 border border-kian-brand/30 text-kian-brand text-xs font-bold mb-8">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-kian-brand opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-kian-brand"></span>
+          </span>
+          AgentNet Gateway v1.0 is Live
+        </div>
+        
+        {/* العنوان الرئيسي */}
+        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
+          The Infrastructure for <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-kian-brand to-blue-400">
+            Intelligent Agents
+          </span>
+        </h1>
+        
+        {/* الوصف */}
+        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mb-12 leading-relaxed">
+          Scale your AI operations with Kian AgentNet. Get secure API keys, monitor your token usage, and integrate seamless data extractions in minutes.
+        </p>
+        
+        {/* أزرار الإجراءات (CTAs) */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+          <Link 
+            href="/signup" 
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-kian-brand hover:bg-blue-600 text-white rounded-xl font-bold transition-all shadow-lg shadow-kian-brand/25"
+          >
+            Start Building Free <ArrowRight size={18} />
+          </Link>
+          <Link 
+            href="/dashboard" 
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl font-bold transition-all"
+          >
+            <Terminal size={18} className="text-gray-400" />
+            Go to Dashboard
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          
-          {/* API Usage */}
-          <div className="bg-kian-800/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-3 text-kian-glow mb-4">
-                <Activity size={20} />
-                <h3 className="font-semibold text-gray-200">API Usage (Credits)</h3>
-              </div>
-              <div className="flex items-end gap-2 mb-3">
-                <span className="text-4xl font-extrabold text-white">{credits.toLocaleString()}</span>
-                <span className="text-gray-400 mb-1 text-sm">/ {maxCredits.toLocaleString()} Credits</span>
-              </div>
-            </div>
-
-            <div className="w-full">
-              <div className="w-full bg-white/10 rounded-full h-2 mb-1 overflow-hidden">
-                <div 
-                  className="bg-gradient-to-r from-kian-brand to-kian-glow h-2 rounded-full transition-all duration-500" 
-                  style={{ width: `${progressPercentage}%` }}
-                ></div>
-              </div>
-              <p className="text-[11px] text-gray-400">Available in your active plan</p>
-            </div>
+        {/* مميزات سريعة */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-24 max-w-4xl w-full text-left">
+          <div className="p-6 bg-white/5 border border-white/5 rounded-2xl">
+            <Shield className="text-emerald-400 mb-4" size={24} />
+            <h3 className="text-lg font-bold text-white mb-2">Secure API Keys</h3>
+            <p className="text-sm text-gray-400">Generate and manage cryptographic keys to authenticate your agent requests securely.</p>
           </div>
-
-          {/* Successful Extractions */}
-          <div className="bg-kian-800/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-xl">
-            <div className="flex items-center gap-3 text-emerald-400 mb-4">
-              <Terminal size={20} />
-              <h3 className="font-semibold text-gray-200">Successful Extractions</h3>
-            </div>
-            <div className="text-4xl font-extrabold text-white">0</div>
+          <div className="p-6 bg-white/5 border border-white/5 rounded-2xl">
+            <Zap className="text-kian-brand mb-4" size={24} />
+            <h3 className="text-lg font-bold text-white mb-2">Real-time Metrics</h3>
+            <p className="text-sm text-gray-400">Monitor your credit usage and extraction success rates directly from your dashboard.</p>
           </div>
-
-          {/* Current Plan */}
-          <div className="bg-gradient-to-b from-kian-brand/10 to-transparent border border-kian-brand/30 rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-kian-brand/10 rounded-bl-full blur-2xl"></div>
-            <div>
-              <div className="flex items-center gap-3 text-kian-brand mb-4">
-                <CreditCard size={20} />
-                <h3 className="font-semibold text-gray-200">Current Plan</h3>
-              </div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-2xl font-extrabold text-white">{planName}</span>
-                {planName === "Pro Tier" && (
-                  <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-0.5 rounded-full border border-emerald-500/30 font-medium">
-                    Active
-                  </span>
-                )}
-              </div>
-              <p className="text-sm text-gray-400 mb-4">
-                {planName === "Pro Tier" 
-                  ? "Pro account activated with high-volume tokens." 
-                  : "Upgrade via Lemon Squeezy for higher limits."}
-              </p>
-            </div>
-
-            {planName !== "Pro Tier" && (
-              <a 
-                href={checkoutUrl}
-                className="w-full flex items-center justify-center gap-2 py-3 bg-kian-brand hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-kian-brand/20"
-              >
-                Upgrade Plan ($19) <ArrowRight size={16} />
-              </a>
-            )}
+          <div className="p-6 bg-white/5 border border-white/5 rounded-2xl">
+            <Cpu className="text-purple-400 mb-4" size={24} />
+            <h3 className="text-lg font-bold text-white mb-2">High Performance</h3>
+            <p className="text-sm text-gray-400">Built on Edge infrastructure to ensure sub-second latency for all your AI operations.</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-kian-800/40 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-xl">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <Key size={20} className="text-kian-glow" />
-                  <h2 className="text-lg font-bold text-white">Authentication & API Keys</h2>
-                </div>
-              </div>
-              <p className="text-sm text-gray-400 mb-4">
-                Use this key to authenticate your requests to the AgentNet Gateway. Keep it secret.
-              </p>
-              <div className="flex items-center gap-3 bg-kian-900/80 p-3.5 rounded-xl border border-white/10">
-                <code className="text-sm text-kian-glow font-mono flex-1 overflow-hidden text-ellipsis">
-                  {apiKey || "Generating Key..."}
-                </code>
-                <button 
-                  onClick={handleCopy}
-                  className="p-2.5 bg-white/5 hover:bg-white/10 rounded-lg transition-colors text-gray-300 border border-white/10 flex items-center gap-1.5 text-xs font-medium cursor-pointer"
-                >
-                  {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
-                  {copied ? "Copied" : "Copy"}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Quick Actions</h2>
-            <Link href="/playground" className="flex items-start gap-4 p-5 bg-kian-800/40 backdrop-blur-md border border-white/10 rounded-2xl hover:border-kian-brand/50 hover:bg-kian-800/60 transition-all group">
-              <div className="p-3 bg-kian-brand/10 rounded-xl group-hover:bg-kian-brand/20 text-kian-glow transition-colors">
-                <Terminal size={22} />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-200 mb-1 group-hover:text-white transition-colors">Protocol Playground</h3>
-                <p className="text-xs text-gray-400">Test extractions visually without writing any code.</p>
-              </div>
-            </Link>
-          </div>
-        </div>
       </main>
     </div>
   );
