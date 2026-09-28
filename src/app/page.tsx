@@ -127,7 +127,7 @@ export default function LandingPage() {
 
           <div className="p-6 font-mono text-sm leading-relaxed overflow-x-auto text-gray-300 space-y-3">
             <div className="flex items-center gap-2 text-gray-500">
-              <span>// Authenticating Agent Key with Kian Core</span>
+              <span>{"// Authenticating Agent Key with Kian Core"}</span>
             </div>
             <div className="text-blue-400">
               <span className="text-purple-400">const</span> agent = <span className="text-purple-400">new</span> KianAgentNet(&#123; apiKey: <span className="text-emerald-300">&quot;sk_kian_99f28a7c...&quot;</span> &#125;);
