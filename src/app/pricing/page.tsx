@@ -1,24 +1,28 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Check, Zap, Server, Shield, ArrowRight } from 'lucide-react';
 
 export default function PricingPage() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans selection:bg-blue-500/30">
       
       {/* Navigation Bar */}
       <nav className="border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 transition-all">
               <Zap size={18} className="text-white" />
             </div>
-            <Link href="/" className="font-extrabold text-xl tracking-tight text-white hover:opacity-80 transition-opacity">
-              KIAN<span className="text-blue-500 font-light">AgentNet</span>
-            </Link>
-          </div>
+            <span className="font-extrabold text-xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+              Kian
+            </span>
+          </Link>
           <div className="flex items-center gap-6">
+            <Link href="/" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">Home</Link>
             <Link href="/login" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Log In</Link>
             <Link href="/signup" className="text-sm font-medium bg-white text-black px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
               Get Started
@@ -38,7 +42,7 @@ export default function PricingPage() {
       </div>
 
       {/* Pricing Cards */}
-      <div className="max-w-7xl mx-auto px-6 pb-24 grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-6 pb-24 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
         
         {/* Starter Plan */}
         <div className="bg-[#111] border border-gray-800 rounded-3xl p-8 flex flex-col relative hover:border-gray-700 transition-colors">
@@ -85,7 +89,7 @@ export default function PricingPage() {
           <ul className="space-y-4 flex-1">
             <li className="flex gap-3 text-white font-medium text-sm"><Check size={20} className="text-blue-500 shrink-0" /> 10,000 API Credits / month</li>
             <li className="flex gap-3 text-gray-300 text-sm"><Check size={20} className="text-blue-500 shrink-0" /> Custom JSON Schemas</li>
-            <li className="flex gap-3 text-gray-300 text-sm"><Check size={20} className="text-blue-500 shrink-0" /> On-the-fly Translation & Localization</li>
+            <li className="flex gap-3 text-gray-300 text-sm"><Check size={20} className="text-blue-500 shrink-0" /> On-the-fly Translation</li>
             <li className="flex gap-3 text-gray-300 text-sm"><Check size={20} className="text-blue-500 shrink-0" /> 5 Requests / second limit</li>
             <li className="flex gap-3 text-gray-300 text-sm"><Check size={20} className="text-blue-500 shrink-0" /> Standard Webhook Notifications</li>
           </ul>

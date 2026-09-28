@@ -15,8 +15,7 @@ import {
   X,
   Globe,
   Database,
-  CheckCircle2,
-  Server
+  HelpCircle
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -35,10 +34,33 @@ export default function LandingPage() {
     router.push(path);
   };
 
+  const faqs = [
+    {
+      q: "What exactly does Kian AgentNet do?",
+      a: "Kian AgentNet is a powerful API gateway designed specifically for AI Agents. It transforms any unstructured web page into strict, predictable JSON data. Instead of writing brittle web scraping scripts that break when a website's UI changes, our platform uses advanced Vision & Semantic LLMs to 'read' the page like a human and extract exactly what your agent needs."
+    },
+    {
+      q: "Can it handle dynamic websites heavily reliant on JavaScript?",
+      a: "Absolutely. Our infrastructure includes a built-in headless browser layer that fully renders JavaScript, intercepts dynamic network requests, and waits for single-page applications (SPAs) to load before performing the extraction. You get the data, no matter how complex the frontend is."
+    },
+    {
+      q: "How does this compare to traditional Web Scraping tools?",
+      a: "Traditional scrapers rely on CSS selectors and DOM parsing, meaning the moment a website updates its design, your pipeline breaks (Zero Maintenance). Kian AgentNet is 'anti-fragile'. By relying on AI comprehension rather than static selectors, your automated workflows will continue functioning seamlessly regardless of underlying HTML changes."
+    },
+    {
+      q: "How reliable is the JSON output for production environments?",
+      a: "Highly reliable. We utilize strict schema enforcement techniques. You provide the JSON structure your application expects, and our engine guarantees the output will match that exact format and data type, passing rigorous validation before the API response is sent back to your servers."
+    },
+    {
+      q: "Does the system support Arabic and multilingual extraction?",
+      a: "Yes. Our engine natively understands and processes all major languages, including right-to-left languages like Arabic, with exceptional accuracy. Furthermore, our Pro and Scale tiers support 'On-the-fly Translation', allowing you to extract data from a Chinese supplier website directly into English or Arabic JSON."
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-kian-900 text-white font-sans selection:bg-kian-brand/30 overflow-x-hidden">
       
-      {/* تأثيرات الإضاءة الخلفية */}
+      {/* Background Effects */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-kian-brand/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob" />
         <div className="absolute top-[20%] right-[-10%] w-[35rem] h-[35rem] bg-kian-accent/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000" />
@@ -58,7 +80,8 @@ export default function LandingPage() {
 
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
             <a href="#features" className="hover:text-white transition-colors">Features</a>
-            <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+            {/* تم تحديث رابط الأسعار للتوجه لصفحة مستقلة */}
+            <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
             <Link href="/about" className="hover:text-white transition-colors">About Us</Link>
             <a href="mailto:hello@kian-agentnet.com" className="hover:text-white transition-colors">Contact</a>
             <div className="w-px h-4 bg-gray-700"></div>
@@ -219,125 +242,38 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Section - 3 Tiers */}
-      <section id="pricing" className="py-24 relative border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* FAQ Section (Replaced Pricing) */}
+      <section id="faq" className="py-24 relative border-t border-white/5">
+        <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              Start prototyping for free. Upgrade when your AI agents need to scale.
-            </p>
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-500/10 text-blue-400 mb-4">
+              <HelpCircle size={24} />
+            </div>
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
+            <p className="text-gray-400">Everything you need to know about integrating Kian AgentNet.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-start">
-            
-            {/* Starter Plan */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-kian-800/30 p-8 rounded-3xl border border-white/5 flex flex-col"
-            >
-              <div className="mb-8">
-                <span className="text-kian-glow text-sm font-semibold tracking-wider uppercase">Starter</span>
-                <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold">$0</span>
-                  <span className="text-gray-400">/ month</span>
-                </div>
-                <p className="mt-4 text-gray-400 text-sm h-10">Perfect for testing the API and personal projects.</p>
-              </div>
-              <ul className="space-y-4 mb-8 flex-1">
-                {[
-                  "50 API Credits / month", 
-                  "Standard JSON Extraction", 
-                  "1 Request / second limit", 
-                  "Email Support"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm text-gray-300">
-                    <CheckCircle2 size={18} className="text-kian-glow shrink-0" /> {item}
-                  </li>
-                ))}
-              </ul>
-              <button onClick={() => handleAuthNavigation('/signup')} className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition-colors border border-white/10">
-                Start Free Trial
-              </button>
-            </motion.div>
+          <div className="space-y-6">
+            {faqs.map((faq, index) => (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="bg-kian-800/30 border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-colors"
+              >
+                <h3 className="text-xl font-semibold text-white mb-3">{faq.q}</h3>
+                <p className="text-gray-400 leading-relaxed text-sm md:text-base">{faq.a}</p>
+              </motion.div>
+            ))}
+          </div>
 
-            {/* Pro Plan */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="bg-gradient-to-b from-kian-brand/10 to-transparent p-8 rounded-3xl border border-kian-brand/30 relative flex flex-col md:-translate-y-4 shadow-2xl shadow-kian-brand/10"
-            >
-              <div className="absolute top-0 right-8 -translate-y-1/2 bg-kian-brand text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                Most Popular
-              </div>
-              <div className="mb-8">
-                <span className="text-kian-brand text-sm font-semibold tracking-wider uppercase">Pro Tier</span>
-                <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold">$19.99</span>
-                  <span className="text-gray-400">/ month</span>
-                </div>
-                <p className="mt-4 text-gray-400 text-sm h-10">For startups and active automation workflows.</p>
-              </div>
-              <ul className="space-y-4 mb-8 flex-1">
-                {[
-                  "10,000 API Credits / month", 
-                  "Custom JSON Schemas", 
-                  "On-the-fly Translation", 
-                  "5 Requests / second limit",
-                  "Standard Webhook Notifications"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm text-gray-300">
-                    <CheckCircle2 size={18} className="text-kian-brand shrink-0" /> {item}
-                  </li>
-                ))}
-              </ul>
-              <a href="https://kian-agentnet1.lemonsqueezy.com/checkout/buy/5a748b53-e93b-4631-bb4c-3d3d7c6abe84" target="_blank" rel="noopener noreferrer" className="w-full py-3 rounded-xl bg-kian-brand hover:bg-blue-500 text-white font-bold transition-all shadow-lg shadow-kian-brand/20 flex items-center justify-center gap-2">
-                Upgrade to Pro <ArrowRight size={18} />
-              </a>
-            </motion.div>
-
-            {/* Scale Plan */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="bg-kian-800/30 p-8 rounded-3xl border border-white/5 flex flex-col"
-            >
-              <div className="mb-8">
-                <span className="text-purple-400 text-sm font-semibold tracking-wider uppercase">Scale</span>
-                <div className="mt-4 flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold">$79.99</span>
-                  <span className="text-gray-400">/ month</span>
-                </div>
-                <p className="mt-4 text-gray-400 text-sm h-10">For serious data operations and high-volume limits.</p>
-              </div>
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex items-center gap-3 text-sm text-gray-300">
-                  <CheckCircle2 size={18} className="text-purple-400 shrink-0" /> 50,000 API Credits / month
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-300">
-                  <Shield size={18} className="text-emerald-400 shrink-0" /> Anti-Bot & JS Engine
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-300">
-                  <Server size={18} className="text-emerald-400 shrink-0" /> Batch URL Processing
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-300">
-                  <Zap size={18} className="text-emerald-400 shrink-0" /> Scheduled Tracker
-                </li>
-                <li className="flex items-center gap-3 text-sm text-gray-300">
-                  <CheckCircle2 size={18} className="text-purple-400 shrink-0" /> Priority Support
-                </li>
-              </ul>
-              <a href="https://kian-agentnet1.lemonsqueezy.com/checkout/buy/6a2d3e58-821d-4863-bd7e-a65e695b5d3d" target="_blank" rel="noopener noreferrer" className="w-full py-3 rounded-xl bg-white hover:bg-gray-200 text-black font-bold transition-all flex items-center justify-center text-center">
-                Get Scale
-              </a>
-            </motion.div>
-
+          <div className="mt-12 text-center">
+            <p className="text-gray-400 mb-6">Ready to scale your AI extraction?</p>
+            <Link href="/pricing" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white text-black font-bold hover:bg-gray-200 transition-all">
+              View Pricing Plans <ArrowRight size={18} />
+            </Link>
           </div>
         </div>
       </section>
@@ -358,7 +294,8 @@ export default function LandingPage() {
             <h4 className="text-white font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-sm text-gray-500">
               <li><Link href="/playground" className="hover:text-white transition-colors">Playground</Link></li>
-              <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
+              {/* تم تحديث رابط الفوتر */}
+              <li><Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
               <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
             </ul>
           </div>
