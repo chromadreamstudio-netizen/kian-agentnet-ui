@@ -2,7 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Play, Copy, Check, Loader2, AlertCircle, Database, Shield, ArrowLeft, Zap } from "lucide-react";
+import { 
+  Play, 
+  Copy, 
+  Check, 
+  Loader2, 
+  AlertCircle, 
+  Database, 
+  ShieldCheck, 
+  ArrowLeft, 
+  Globe,
+  Code2,
+  Terminal
+} from "lucide-react";
 
 export default function ProtocolPlayground() {
   const [apiKey, setApiKey] = useState("sk_kian_913b5c3a6daa265cb6f3e98911c57c35");
@@ -41,7 +53,7 @@ export default function ProtocolPlayground() {
       }
     } catch {
       setError("فشل الاتصال بالخادم. تأكد من عمل الـ Backend.");
-    } finally {
+    } font-mono {
       setLoading(false);
     }
   };
@@ -55,147 +67,152 @@ export default function ProtocolPlayground() {
   };
 
   return (
-    <div className="min-h-screen bg-kian-900 text-white font-sans selection:bg-kian-brand/30 overflow-x-hidden">
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 font-sans selection:bg-red-500/20 selection:text-red-200 overflow-x-hidden antialiased">
       
-      {/* تأثيرات الإضاءة الخلفية */}
-      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-kian-brand/25 rounded-full mix-blend-screen filter blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[35rem] h-[35rem] bg-kian-accent/15 rounded-full mix-blend-screen filter blur-[120px]" />
-      </div>
+      {/* إضاءة خلفية خافتة */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[350px] bg-gradient-to-b from-red-500/5 via-zinc-900/0 to-transparent blur-3xl pointer-events-none -z-10" />
 
       {/* Header */}
-      <header className="border-b border-white/5 bg-kian-900/80 backdrop-blur-xl sticky top-0 z-50 py-4 px-6">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <header className="border-b border-zinc-800/80 bg-[#09090b]/80 backdrop-blur-xl sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-kian-brand to-kian-accent flex items-center justify-center shadow-lg shadow-kian-brand/20">
-              <Zap size={22} className="text-white" />
+            <div className="w-6 h-6 rounded bg-red-500 flex items-center justify-center shadow-lg shadow-red-500/20">
+              <span className="text-black font-black text-xs tracking-tighter">K</span>
             </div>
             <div>
-              <h1 className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                Protocol Playground <span className="text-kian-glow text-sm font-mono px-2 py-0.5 rounded-full bg-kian-brand/10 border border-kian-brand/20">v1.0</span>
+              <h1 className="text-sm font-bold tracking-tight text-white flex items-center gap-2">
+                Protocol Playground <span className="text-red-400 text-[10px] font-mono px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20">v1.0.4</span>
               </h1>
-              <p className="text-gray-400 text-xs hidden sm:block">
-                Test the AgentNet Web Protocol instantly with your API Key.
-              </p>
             </div>
           </div>
+          
           <Link 
-            href="/" 
-            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 hover:bg-white/5 text-sm transition-all text-gray-300 font-medium"
+            href="/dashboard" 
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 bg-zinc-900/50 text-xs font-medium text-zinc-300 hover:text-white transition-all"
           >
-            <ArrowLeft size={16} /> Back to Home
+            <ArrowLeft size={14} /> Back to Dashboard
           </Link>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <main className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* Left Column: Inputs */}
+        {/* العمود الأيسر: الإدخلات والمدخلات (Inputs) */}
         <div className="space-y-6">
           
-          {/* Auth Card */}
-          <div className="bg-kian-800/40 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-1.5 h-full bg-kian-glow"></div>
-            <label className="flex items-center gap-2 text-sm text-kian-glow mb-3 font-semibold">
-              <Shield size={16} /> Authentication (X-API-Key)
-            </label>
+          {/* كارت المصادقة Auth Key */}
+          <div className="bg-[#0c0c0e] border border-zinc-800 rounded-xl p-5 shadow-2xl relative overflow-hidden">
+            <div className="flex items-center justify-between mb-3">
+              <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <ShieldCheck size={14} className="text-red-500" /> Authentication (X-API-Key)
+              </label>
+              <span className="text-[10px] font-mono text-zinc-500">Bearer Protocol</span>
+            </div>
             <input
               type="text"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              className="w-full bg-kian-900/80 border border-white/10 rounded-xl p-3.5 text-sm text-gray-200 focus:outline-none focus:border-kian-brand transition-colors font-mono"
+              className="w-full bg-[#050506] border border-zinc-800/80 rounded-lg p-3 text-xs text-zinc-200 focus:outline-none focus:border-red-500/50 transition-colors font-mono tracking-tight"
             />
-            <p className="text-xs text-gray-500 mt-2">Required to authenticate your request via Supabase database.</p>
+            <p className="text-[11px] text-zinc-500 mt-2">Required for validating credit deduction on the Edge Gateway.</p>
           </div>
 
-          {/* URL Input */}
-          <div className="bg-kian-800/40 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-xl">
-            <label className="block text-sm text-gray-300 mb-3 font-semibold">1. Target Website URL</label>
+          {/* رابط الموقع Target URL */}
+          <div className="bg-[#0c0c0e] border border-zinc-800 rounded-xl p-5 shadow-2xl">
+            <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3">
+              <Globe size={14} className="text-zinc-400" /> Target Website URL
+            </label>
             <input
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              className="w-full bg-kian-900/80 border border-white/10 rounded-xl p-3.5 text-sm text-gray-200 focus:outline-none focus:border-kian-brand transition-colors font-mono"
+              className="w-full bg-[#050506] border border-zinc-800/80 rounded-lg p-3 text-xs text-zinc-200 focus:outline-none focus:border-red-500/50 transition-colors font-mono"
               placeholder="https://example.com"
             />
           </div>
 
-          {/* Schema Input */}
-          <div className="bg-kian-800/40 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-xl">
-            <label className="block text-sm text-gray-300 mb-3 font-semibold">2. Target Schema (Extraction Instructions)</label>
+          {/* تعليمات الاستخراج Target Schema */}
+          <div className="bg-[#0c0c0e] border border-zinc-800 rounded-xl p-5 shadow-2xl">
+            <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3">
+              <Code2 size={14} className="text-zinc-400" /> Target Schema (Extraction Directives)
+            </label>
             <textarea
               value={schema}
               onChange={(e) => setSchema(e.target.value)}
               rows={4}
-              className="w-full bg-kian-900/80 border border-white/10 rounded-xl p-4 text-sm text-kian-glow font-mono focus:outline-none focus:border-kian-brand transition-colors resize-none leading-relaxed"
+              className="w-full bg-[#050506] border border-zinc-800/80 rounded-lg p-3.5 text-xs text-zinc-300 font-mono focus:outline-none focus:border-red-500/50 transition-colors resize-none leading-relaxed"
             />
           </div>
 
-          {/* Action Button */}
+          {/* زر التشغيل Run Extraction */}
           <button
             onClick={handleRunExtraction}
             disabled={loading}
-            className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg ${
+            className={`w-full py-3.5 rounded-lg font-semibold text-xs flex items-center justify-center gap-2 transition-all duration-200 shadow-md ${
               loading 
-                ? "bg-kian-brand/50 cursor-not-allowed text-white/70 shadow-none" 
-                : "bg-kian-brand hover:bg-blue-500 text-white shadow-kian-brand/30 hover:shadow-kian-brand/50"
+                ? "bg-zinc-800 text-zinc-500 cursor-not-allowed border border-zinc-700/50" 
+                : "bg-red-500 hover:bg-red-600 text-black shadow-red-500/20 active:scale-[0.99]"
             }`}
           >
             {loading ? (
               <>
-                <Loader2 size={20} className="animate-spin" />
-                Processing Protocol...
+                <Loader2 size={16} className="animate-spin text-zinc-400" />
+                Executing Gateway Protocol...
               </>
             ) : (
               <>
-                <Play size={20} />
+                <Play size={15} className="fill-black" />
                 Run Extraction
               </>
             )}
           </button>
         </div>
 
-        {/* Right Column: Output Terminal */}
-        <div className="bg-kian-800/40 backdrop-blur-md rounded-2xl border border-white/10 flex flex-col overflow-hidden shadow-2xl h-[700px]">
+        {/* العمود الأيمن: شاشة المخرجات (Terminal Output) */}
+        <div className="bg-[#0c0c0e] border border-zinc-800 rounded-xl flex flex-col overflow-hidden shadow-2xl h-[620px]">
           
           {/* Terminal Header */}
-          <div className="bg-kian-900/80 border-b border-white/10 p-4 flex justify-between items-center">
-            <div className="flex items-center gap-2 text-sm text-gray-300 font-medium">
-              <Database size={16} className="text-kian-brand" />
-              <span>Structured Output</span>
+          <div className="bg-[#121215] px-4 py-3 border-b border-zinc-800/80 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-zinc-700/60" />
+              <div className="w-2.5 h-2.5 rounded-full bg-zinc-700/60" />
+              <div className="w-2.5 h-2.5 rounded-full bg-zinc-700/60" />
+              <span className="text-[11px] font-mono text-zinc-400 ml-2 flex items-center gap-1.5">
+                <Terminal size={12} className="text-red-400" /> structured-payload.json
+              </span>
             </div>
             
             {output && (
               <button
                 onClick={handleCopy}
-                className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-medium text-gray-300 transition-colors border border-white/10"
+                className="flex items-center gap-1.5 px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 rounded text-[11px] font-sans text-zinc-300 transition-colors border border-zinc-700/50"
               >
-                {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-                {copied ? "Copied!" : "Copy JSON"}
+                {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                {copied ? "Copied" : "Copy JSON"}
               </button>
             )}
           </div>
 
           {/* Terminal Body */}
-          <div className="flex-1 p-6 overflow-auto bg-[#030712] relative custom-scrollbar">
+          <div className="flex-1 p-5 overflow-auto bg-[#050506] relative custom-scrollbar font-mono text-xs">
             {loading ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-kian-glow bg-kian-900/40 backdrop-blur-sm">
-                <Loader2 size={40} className="animate-spin mb-4" />
-                <p className="text-sm animate-pulse font-medium">Initializing AI Agents... reading DOM...</p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-zinc-400 bg-[#050506]/80 backdrop-blur-sm">
+                <Loader2 size={32} className="animate-spin text-red-500 mb-3" />
+                <p className="text-xs animate-pulse font-mono text-zinc-300">Parsing DOM Nodes & Synthesizing Payload...</p>
               </div>
             ) : error ? (
-              <div className="flex items-start gap-3 text-red-400 bg-red-500/10 p-4 rounded-xl border border-red-500/20">
-                <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
-                <p className="text-sm font-mono whitespace-pre-wrap">{error}</p>
+              <div className="flex items-start gap-3 text-red-400 bg-red-500/10 p-4 rounded-lg border border-red-500/20">
+                <AlertCircle size={18} className="flex-shrink-0 mt-0.5 text-red-400" />
+                <p className="text-xs font-mono whitespace-pre-wrap">{error}</p>
               </div>
             ) : output ? (
-              <pre className="text-[13px] font-mono leading-relaxed text-[#a5d6ff]">
+              <pre className="text-xs leading-relaxed">
                 <code dangerouslySetInnerHTML={{ __html: syntaxHighlight(JSON.stringify(output, null, 2)) }} />
               </pre>
             ) : (
-              <div className="h-full flex flex-col items-center justify-center text-gray-500">
-                <Database size={48} className="mb-4 opacity-20" />
-                <p className="text-sm">Click &quot;Run Extraction&quot; to see the magic.</p>
+              <div className="h-full flex flex-col items-center justify-center text-zinc-600">
+                <Database size={40} className="mb-3 stroke-1 text-zinc-700" />
+                <p className="text-xs font-sans">Click &quot;Run Extraction&quot; to inspect real-time JSON responses.</p>
               </div>
             )}
           </div>
@@ -206,22 +223,23 @@ export default function ProtocolPlayground() {
   );
 }
 
+// تنسيق ألوان الـ JSON داخل التيرمينال ليتناسب مع الهوية
 function syntaxHighlight(json: string) {
   json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-    let cls = 'text-[#79c0ff]';
+    let cls = 'text-emerald-400';
     if (/^"/.test(match)) {
       if (/:$/.test(match)) {
-        cls = 'text-[#d2a8ff]';
+        cls = 'text-red-400';
       } else {
-        cls = 'text-[#a5d6ff]';
+        cls = 'text-zinc-200';
       }
     } else if (/true|false/.test(match)) {
-      cls = 'text-[#ff7b72]';
+      cls = 'text-amber-400';
     } else if (/null/.test(match)) {
-      cls = 'text-[#ff7b72]';
+      cls = 'text-zinc-500';
     } else {
-      cls = 'text-[#f0883e]';
+      cls = 'text-purple-400';
     }
     return '<span class="' + cls + '">' + match + '</span>';
   });
