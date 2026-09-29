@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { 
   Key, Copy, Check, Shield, Zap, CreditCard, 
-  AlertCircle, Terminal, BookOpen, Webhook, Play, ArrowRight 
+  AlertCircle, Terminal, BookOpen, Webhook, ArrowRight, Code2, Sparkles
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -42,17 +42,15 @@ export default function DashboardPage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* رابط الـ Playground المباشر في الـ Header */}
+          <div className="flex items-center gap-4">
             <Link 
               href="/playground" 
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-xs font-semibold text-red-400 hover:text-red-300 transition-all"
+              className="flex items-center gap-1.5 text-xs font-semibold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded-lg border border-red-500/20 transition-all"
             >
-              <Play size={13} className="fill-current" /> Playground
+              <Code2 size={14} /> JSON Code Generator
             </Link>
-
-            <Link href="/pricing" className="text-xs font-medium text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5 ml-2">
-              <CreditCard size={14} /> Upgrade Plan
+            <Link href="/pricing" className="text-xs font-medium text-zinc-400 hover:text-white transition-colors flex items-center gap-1.5">
+              <CreditCard size={14} /> Plans
             </Link>
           </div>
         </div>
@@ -61,7 +59,7 @@ export default function DashboardPage() {
       <main className="max-w-4xl mx-auto px-6 py-12">
         <div className="mb-10">
           <h1 className="text-2xl font-bold text-white mb-2">Welcome to KIAN AgentNet</h1>
-          <p className="text-sm text-zinc-400">Manage your API keys, monitor usage, and test your autonomous agents.</p>
+          <p className="text-sm text-zinc-400">Generate your API key and start building structured JSON extraction schemas.</p>
         </div>
 
         {/* API Key Section */}
@@ -73,17 +71,17 @@ export default function DashboardPage() {
               <Shield className="text-red-400" size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-white">Authentication</h2>
-              <p className="text-xs text-zinc-400">Your secret API key for executing tasks.</p>
+              <h2 className="text-lg font-semibold text-white">1. Authentication Key</h2>
+              <p className="text-xs text-zinc-400">Your secret API key to power your agents and JSON schemas.</p>
             </div>
           </div>
 
           {!apiKey ? (
             <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-8 text-center relative z-10">
               <Key className="mx-auto text-zinc-500 mb-4" size={32} />
-              <h3 className="text-sm font-medium text-zinc-200 mb-2">No API Key Found</h3>
+              <h3 className="text-sm font-medium text-zinc-200 mb-2">No API Key Generated Yet</h3>
               <p className="text-xs text-zinc-400 mb-6 max-w-sm mx-auto">
-                Generate your first secret key to start connecting your agents to the KIAN network.
+                Generate your free key to unlock the JSON Schema Generator and start extracting data.
               </p>
               <button 
                 onClick={handleGenerateKey}
@@ -94,13 +92,14 @@ export default function DashboardPage() {
                   <span className="animate-pulse flex items-center gap-2">Generating Key...</span>
                 ) : (
                   <>
-                    <Zap size={16} /> Generate Secret Key
+                    <Zap size={16} /> Generate Free API Key
                   </>
                 )}
               </button>
             </div>
           ) : (
-            <div className="space-y-4 relative z-10">
+            <div className="space-y-6 relative z-10">
+              {/* المفتاح المستخرج */}
               <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="font-mono text-sm text-zinc-300 break-all select-all">
                   {apiKey}
@@ -114,41 +113,47 @@ export default function DashboardPage() {
                 </button>
               </div>
 
-              {/* زر ينقل المستخدم فوراً لتجربة المفتاح في Playground */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 bg-red-500/5 border border-red-500/10 rounded-xl p-4">
-                <div className="text-xs text-zinc-300">
-                  <span className="font-semibold text-white">Ready to test?</span> Try extracting data live in the interactive playground.
+              {/* الدعوة المباشرة للعمل (Primary CTA) لإنشاء كود JSON */}
+              <div className="bg-gradient-to-r from-red-500/10 via-zinc-900 to-zinc-900 border border-red-500/30 rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-xs font-bold text-red-400 uppercase tracking-wider">
+                    <Sparkles size={14} /> Step 2: Next Action Required
+                  </div>
+                  <h3 className="text-base font-bold text-white">Create Your First JSON Extraction Schema</h3>
+                  <p className="text-xs text-zinc-400 max-w-lg">
+                    Now use your API key inside the JSON Builder to define custom data fields and generate extraction code.
+                  </p>
                 </div>
                 <Link
                   href="/playground"
-                  className="shrink-0 inline-flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-black font-bold text-xs px-4 py-2 rounded-lg transition-all shadow-md shadow-red-500/10"
+                  className="shrink-0 inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-black font-extrabold text-sm px-6 py-3 rounded-xl transition-all shadow-lg shadow-red-500/25 hover:scale-[1.02]"
                 >
-                  <Play size={13} className="fill-current" /> Launch Playground <ArrowRight size={13} />
+                  <Code2 size={18} /> Build JSON Code Now <ArrowRight size={16} />
                 </Link>
               </div>
 
-              <p className="text-[11px] text-zinc-500 flex items-center gap-1.5 pt-1">
+              <p className="text-[11px] text-zinc-500 flex items-center gap-1.5">
                 <AlertCircle size={12} className="text-yellow-500/70" /> 
-                Keep this key secret. Do not expose it in client-side code (e.g., browsers or mobile apps).
+                Keep this key secret. Do not expose it in client-side code.
               </p>
             </div>
           )}
         </div>
 
-        {/* Quick Start Section */}
+        {/* Quick Start Code Snippet */}
         {apiKey && (
           <div className="mt-8 bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <h2 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
-              <Terminal className="text-zinc-400" size={20} /> Next Steps: Quick Start
+              <Terminal className="text-zinc-400" size={20} /> Developer Quick Start
             </h2>
             <p className="text-sm text-zinc-400 mb-6">
-              Use your new API key to authenticate requests via cURL or test directly in your browser:
+              You can also execute JSON schema extractions directly via cURL or n8n:
             </p>
 
             <div className="relative group">
               <div className="absolute right-3 top-3">
                 <button
-                  onClick={() => copyToClipboard(`curl -X POST https://api.kian-agentnet.com/v1/extract \\\n  -H "Authorization: Bearer ${apiKey}" \\\n  -H "Content-Type: application/json" \\\n  -d '{"target": "https://example.com"}'`, setCodeCopied)}
+                  onClick={() => copyToClipboard(`curl -X POST https://api.kian-agentnet.com/v1/extract \\\n  -H "Authorization: Bearer ${apiKey}" \\\n  -H "Content-Type: application/json" \\\n  -d '{"target": "https://example.com", "schema": {"title": "string", "price": "number"}}'`, setCodeCopied)}
                   className="p-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white rounded-md transition-colors border border-zinc-700/50"
                 >
                   {codeCopied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
@@ -158,13 +163,13 @@ export default function DashboardPage() {
                 <span className="text-red-400">curl</span> -X POST https://api.kian-agentnet.com/v1/extract \{'\n'}
                 {'  '}-H <span className="text-green-400">&quot;Authorization: Bearer {apiKey}&quot;</span> \{'\n'}
                 {'  '}-H <span className="text-green-400">&quot;Content-Type: application/json&quot;</span> \{'\n'}
-                {'  '}-d <span className="text-yellow-300">&apos;&#123;&quot;target&quot;: &quot;https://example.com&quot;&#125;&apos;</span>
+                {'  '}-d <span className="text-yellow-300">&apos;&#123;&quot;target&quot;: &quot;https://example.com&quot;, &quot;schema&quot;: &#123;&quot;title&quot;: &quot;string&quot;&#125;&#125;&apos;</span>
               </pre>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-4 pt-6 border-t border-zinc-800/50">
               <Link href="/playground" className="flex items-center gap-2 text-sm text-white bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg transition-colors border border-zinc-700/50 font-medium">
-                <Play size={16} className="text-red-400 fill-current" /> Interactive Playground
+                <Code2 size={16} className="text-red-400" /> Open Interactive JSON Playground
               </Link>
               <Link href="#" className="flex items-center gap-2 text-sm text-zinc-300 hover:text-white bg-zinc-800/50 hover:bg-zinc-800 px-4 py-2 rounded-lg transition-colors border border-zinc-700/30">
                 <BookOpen size={16} className="text-red-400" /> API Documentation
