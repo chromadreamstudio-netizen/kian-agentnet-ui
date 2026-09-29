@@ -1,63 +1,67 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { Check, Zap, ArrowLeft } from "lucide-react";
+import { 
+  ArrowLeft, Plus, Trash2, Code2, Copy, Check, Terminal, Play, Braces
+} from "lucide-react";
 
-export default function PricingPage() {
-  const plans = [
-    {
-      name: "Starter (Free Tier)",
-      price: "$0",
-      description: "Ideal for testing and lightweight local development.",
-      features: [
-        "50 API Credits Included",
-        "Standard Gateway Rate Limit",
-        "Community Support",
-        "Access to Protocol Playground"
-      ],
-      buttonText: "Current Plan",
-      buttonStyle: "bg-zinc-800 text-zinc-400 cursor-default border border-zinc-700/50",
-      href: "/dashboard"
-    },
-    {
-      name: "Pro Tier",
-      price: "$19.99",
-      period: "/month",
-      featured: true,
-      description: "Built for high-volume automated scraping and agents.",
-      features: [
-        "10,000 API Credits / Mo",
-        "High-Priority Edge Proxy Nodes",
-        "Unlimited Playground Extractions",
-        "Direct Email Support",
-        "Cryptographic Signature Headers"
-      ],
-      buttonText: "Upgrade to Pro",
-      buttonStyle: "bg-red-500 hover:bg-red-600 text-black shadow-lg shadow-red-500/20 font-bold",
-      href: "https://kian-agentnet1.lemonsqueezy.com/checkout/buy/cc334133-ff5c-4eee-8fca-99e66a2a3c2c"
-    },
-    {
-      name: "Scale Tier",
-      price: "$99.99",
-      period: "/month",
-      description: "For custom enterprise workflows and high throughput.",
-      features: [
-        "100,000+ API Credits / Mo",
-        "Dedicated Gateway Infra",
-        "SLA & Priority Telemetry",
-        "Custom DOM Parsing Schemas",
-        "Dedicated Tech Account Manager"
-      ],
-      buttonText: "Contact Sales",
-      buttonStyle: "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/50",
-      href: "mailto:hello@kian-agentnet.com"
+type SchemaField = {
+  id: string;
+  key: string;
+  type: string;
+  description: string;
+};
+
+export default function PlaygroundPage() {
+  const [targetUrl, setTargetUrl] = useState("https://example.com/product/123");
+  const [fields, setFields] = useState<SchemaField[]>([
+    { id: "1", key: "product_name", type: "string", description: "The main title of the product" },
+    { id: "2", key: "price", type: "number", description: "The numerical price" }
+  ]);
+  const [copied, setCopied] = useState(false);
+
+  const addField = () => {
+    setFields([...fields, { id: Math.random().toString(), key: "", type: "string", description: "" }]);
+  };
+
+  const updateField = (id: string, key: keyof SchemaField, value: string) => {
+    setFields(fields.map(f => f.id === id ? { ...f, [key]: value } : f));
+  };
+
+  const removeField = (id: string) => {
+    setFields(fields.filter(f => f.id !== id));
+  };
+
+  // توليد كود الـ JSON بناءً على الحقول
+  const generatedSchema = fields.reduce((acc, field) => {
+    if (field.key) {
+      acc[field.key] = field.type;
     }
-  ];
+    return acc;
+  }, {} as Record<string, string>);
+
+  const payloadObject = {
+    target: targetUrl,
+    schema: generatedSchema
+  };
+
+  const jsonString = JSON.stringify(payloadObject, null, 2);
+
+  const curlCommand = `curl -X POST https://api.kian-agentnet.com/v1/extract \\
+  -H "Authorization: Bearer YOUR_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '${jsonString}'`;
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-100 font-sans selection:bg-red-500/20 selection:text-red-200 overflow-x-hidden antialiased">
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[350px] bg-gradient-to-b from-red-500/5 via-zinc-900/0 to-transparent blur-3xl pointer-events-none -z-10" />
-
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 font-sans pb-20">
+      {/* Header */}
       <header className="border-b border-zinc-800/80 bg-[#09090b]/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -65,7 +69,7 @@ export default function PricingPage() {
               <span className="text-black font-black text-xs tracking-tighter">K</span>
             </div>
             <span className="font-bold text-sm tracking-tight text-white flex items-center gap-2">
-              KIAN <span className="text-zinc-400 font-normal">AgentNet</span>
+              Protocol Playground <span className="text-zinc-500 font-normal">| JSON Builder</span>
             </span>
           </div>
 
@@ -78,62 +82,123 @@ export default function PricingPage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-16">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-400 mb-4">
-            <Zap size={14} className="text-red-500" /> Transparent Protocol Pricing
-          </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-            Simple, Credit-Based Pricing
+      <main className="max-w-6xl mx-auto px-6 py-10">
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+            <Braces className="text-red-500" /> JSON Schema Builder
           </h1>
-          <p className="text-zinc-400 text-sm mt-3 leading-relaxed">
-            Choose the plan that fits your execution volume. Scale seamlessly as your autonomous agents grow.
+          <p className="text-sm text-zinc-400">
+            Define your custom data structure. The KIAN Agent will extract exactly what you request.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {plans.map((plan, i) => (
-            <div 
-              key={i} 
-              className={`rounded-2xl p-6 flex flex-col justify-between relative bg-[#0c0c0e] border transition-all ${
-                plan.featured 
-                  ? "border-red-500/50 shadow-2xl shadow-red-500/5 ring-1 ring-red-500/20" 
-                  : "border-zinc-800/80 hover:border-zinc-700"
-              }`}
-            >
-              {plan.featured && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-red-500 text-black font-bold text-[10px] uppercase tracking-wider">
-                  Most Popular
-                </span>
-              )}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Column: Input Form */}
+          <div className="space-y-6">
+            <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl p-6 shadow-xl">
+              <label className="block text-sm font-semibold text-white mb-2">Target URL</label>
+              <input 
+                type="text" 
+                value={targetUrl}
+                onChange={(e) => setTargetUrl(e.target.value)}
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 transition-all"
+                placeholder="https://..."
+              />
+            </div>
 
-              <div>
-                <h3 className="text-base font-bold text-white mb-1">{plan.name}</h3>
-                <p className="text-xs text-zinc-400 mb-6">{plan.description}</p>
-
-                <div className="flex items-baseline gap-1 mb-6">
-                  <span className="text-4xl font-extrabold text-white font-mono tracking-tight">{plan.price}</span>
-                  {plan.period && <span className="text-xs text-zinc-500 font-mono">{plan.period}</span>}
-                </div>
-
-                <div className="space-y-3 mb-8">
-                  {plan.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-center gap-2.5 text-xs text-zinc-300">
-                      <Check size={14} className="text-red-400 flex-shrink-0" />
-                      <span>{feature}</span>
-                    </div>
-                  ))}
-                </div>
+            <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl p-6 shadow-xl">
+              <div className="flex items-center justify-between mb-4">
+                <label className="block text-sm font-semibold text-white">Data Schema Fields</label>
+                <button 
+                  onClick={addField}
+                  className="flex items-center gap-1.5 text-xs font-medium text-red-400 hover:text-red-300 bg-red-500/10 px-3 py-1.5 rounded-lg transition-colors border border-red-500/20"
+                >
+                  <Plus size={14} /> Add Field
+                </button>
               </div>
 
-              <a 
-                href={plan.href}
-                className={`w-full py-2.5 rounded-lg text-xs font-semibold text-center transition-all block ${plan.buttonStyle}`}
-              >
-                {plan.buttonText}
-              </a>
+              <div className="space-y-3">
+                {fields.map((field, index) => (
+                  <div key={field.id} className="flex gap-3 items-start animate-in fade-in slide-in-from-left-2 duration-300">
+                    <div className="flex-1 space-y-2">
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          value={field.key}
+                          onChange={(e) => updateField(field.id, "key", e.target.value)}
+                          placeholder="field_name"
+                          className="w-1/2 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-200 font-mono focus:outline-none focus:border-zinc-600"
+                        />
+                        <select 
+                          value={field.type}
+                          onChange={(e) => updateField(field.id, "type", e.target.value)}
+                          className="w-1/2 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-400 focus:outline-none focus:border-zinc-600"
+                        >
+                          <option value="string">String (Text)</option>
+                          <option value="number">Number</option>
+                          <option value="boolean">Boolean</option>
+                          <option value="array">Array (List)</option>
+                        </select>
+                      </div>
+                      <input 
+                        type="text" 
+                        value={field.description}
+                        onChange={(e) => updateField(field.id, "description", e.target.value)}
+                        placeholder="Description to help the AI extract it accurately..."
+                        className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-3 py-2 text-xs text-zinc-400 focus:outline-none focus:border-zinc-700"
+                      />
+                    </div>
+                    <button 
+                      onClick={() => removeField(field.id)}
+                      className="p-2.5 text-zinc-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors mt-0.5"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+                
+                {fields.length === 0 && (
+                  <div className="text-center py-8 border border-dashed border-zinc-800 rounded-lg text-zinc-500 text-xs">
+                    No fields added yet. Click &quot;Add Field&quot; to start building your schema.
+                  </div>
+                )}
+              </div>
             </div>
-          ))}
+          </div>
+
+          {/* Right Column: Code Preview */}
+          <div className="space-y-6">
+            <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl flex flex-col h-full">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 bg-zinc-900/50">
+                <div className="flex items-center gap-2 text-xs font-semibold text-white">
+                  <Terminal size={14} className="text-zinc-400" /> Generated cURL Request
+                </div>
+                <button
+                  onClick={() => copyToClipboard(curlCommand)}
+                  className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400 hover:text-white bg-zinc-800 px-2.5 py-1 rounded transition-colors"
+                >
+                  {copied ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
+                  {copied ? "Copied" : "Copy Code"}
+                </button>
+              </div>
+              
+              <div className="p-4 bg-[#0a0a0c] flex-1 overflow-auto">
+                <pre className="font-mono text-[13px] text-zinc-300 leading-relaxed">
+                  <span className="text-red-400">curl</span> -X POST https://api.kian-agentnet.com/v1/extract \{'\n'}
+                  {'  '}-H <span className="text-green-400">&quot;Authorization: Bearer YOUR_API_KEY&quot;</span> \{'\n'}
+                  {'  '}-H <span className="text-green-400">&quot;Content-Type: application/json&quot;</span> \{'\n'}
+                  {'  '}-d <span className="text-yellow-300">&apos;{jsonString}&apos;</span>
+                </pre>
+              </div>
+
+              <div className="p-4 border-t border-zinc-800 bg-zinc-900/30 flex items-center justify-between">
+                <span className="text-xs text-zinc-500">Ready to test?</span>
+                <button className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-black font-bold text-xs px-4 py-2 rounded-lg transition-all shadow-lg shadow-red-500/20">
+                  <Play size={14} className="fill-current" /> Execute Extraction
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>
