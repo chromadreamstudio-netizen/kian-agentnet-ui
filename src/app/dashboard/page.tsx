@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Key, Copy, Check, Shield, Zap, CreditCard } from "lucide-react";
+import { Key, Copy, Check, Shield, Zap, CreditCard, AlertCircle } from "lucide-react";
 
 export default function DashboardPage() {
   const [apiKey, setApiKey] = useState<string | null>(null);
