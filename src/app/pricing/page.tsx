@@ -69,11 +69,12 @@ export default function PricingPage() {
             </span>
           </div>
 
+          {/* التعديل هنا: تحويل الزر للعودة إلى الصفحة الرئيسية */}
           <Link 
-            href="/dashboard" 
+            href="/" 
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 bg-zinc-900/50 text-xs font-medium text-zinc-300 hover:text-white transition-all"
           >
-            <ArrowLeft size={14} /> Back to Dashboard
+            <ArrowLeft size={14} /> Back to Home
           </Link>
         </div>
       </header>
