@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { 
-  ArrowLeft, Plus, Trash2, Copy, Check, Terminal, Play, Braces, Key, Eye, EyeOff, Sparkles, RefreshCw, HelpCircle, ArrowRight
+  ArrowLeft, Plus, Trash2, Copy, Check, Terminal, Play, Key, Eye, EyeOff, Sparkles, RefreshCw, HelpCircle
 } from "lucide-react";
 
 type SchemaField = {
