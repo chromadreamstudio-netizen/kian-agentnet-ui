@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { 
-  ArrowLeft, Plus, Trash2, Copy, Check, Terminal, Play, Braces, Key, Eye, EyeOff, Sparkles, RefreshCw
+  ArrowLeft, Plus, Trash2, Copy, Check, Terminal, Play, Braces, Key, Eye, EyeOff, Sparkles, RefreshCw, HelpCircle, ArrowRight
 } from "lucide-react";
 
 type SchemaField = {
@@ -24,6 +24,16 @@ export default function PlaygroundPage() {
   const [copied, setCopied] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionResponse, setExecutionResponse] = useState<string | null>(null);
+
+  // Load Preset Example for Instant Validation
+  const loadPresetExample = () => {
+    setTargetUrl("https://news.ycombinator.com/item?id=37000000");
+    setFields([
+      { id: "1", key: "article_title", type: "string", description: "Title of the post" },
+      { id: "2", key: "points", type: "number", description: "Total upvotes or points" },
+      { id: "3", key: "author", type: "string", description: "Username of the submitter" }
+    ]);
+  };
 
   const addField = () => {
     setFields([...fields, { id: Math.random().toString(), key: "", type: "string", description: "" }]);
@@ -50,7 +60,6 @@ export default function PlaygroundPage() {
   };
 
   const jsonString = JSON.stringify(payloadObject, null, 2);
-
   const activeKey = apiKey.trim() || "YOUR_API_KEY";
 
   const curlCommand = `curl -X POST https://api.kian-agentnet.com/v1/extract \\
@@ -93,7 +102,7 @@ export default function PlaygroundPage() {
               <span className="text-black font-black text-xs tracking-tighter">K</span>
             </div>
             <span className="font-bold text-sm tracking-tight text-white flex items-center gap-2">
-              Protocol Playground <span className="text-zinc-500 font-normal">| JSON Schema Builder</span>
+              Protocol Playground <span className="text-zinc-500 font-normal">| Interactive Tester</span>
             </span>
           </div>
 
@@ -111,21 +120,42 @@ export default function PlaygroundPage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-10">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-            <Braces className="text-red-500" /> Interactive Playground &amp; API Tester
-          </h1>
-          <p className="text-sm text-zinc-400">
-            Paste your API key, target URL, and JSON schema to test real-time extraction.
-          </p>
+      <main className="max-w-6xl mx-auto px-6 py-8">
+        
+        {/* Step-by-Step Guidance Banner */}
+        <div className="mb-8 bg-zinc-900/60 border border-zinc-800 p-5 rounded-2xl">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold text-white flex items-center gap-2">
+              <HelpCircle size={16} className="text-red-400" /> How to use this Playground in 3 Steps:
+            </h2>
+            <button 
+              onClick={loadPresetExample}
+              className="text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg font-medium transition-all"
+            >
+              ⚡ Fill Example Data
+            </button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-zinc-400">
+            <div className="bg-zinc-950/80 p-3 rounded-xl border border-zinc-800/80">
+              <strong className="text-zinc-200 block mb-1">1. Paste URL &amp; Define Schema:</strong>
+              Enter the target webpage and the exact JSON fields you want the AI to extract.
+            </div>
+            <div className="bg-zinc-950/80 p-3 rounded-xl border border-zinc-800/80">
+              <strong className="text-zinc-200 block mb-1">2. Test Extraction Live:</strong>
+              Click &quot;Execute Extraction&quot; to test your setup and view real-time JSON response.
+            </div>
+            <div className="bg-zinc-950/80 p-3 rounded-xl border border-zinc-800/80">
+              <strong className="text-zinc-200 block mb-1">3. Copy cURL for Code:</strong>
+              Copy the generated cURL command and use it directly in Python, n8n, or your AI agents.
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column: Config */}
+          {/* Left Column: Inputs */}
           <div className="space-y-6">
             
-            {/* API Key Input Section */}
+            {/* API Key */}
             <div className="bg-[#0c0c0e] border border-red-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden">
               <div className="flex items-center justify-between mb-2">
                 <label className="text-xs font-bold text-red-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -150,7 +180,7 @@ export default function PlaygroundPage() {
 
             {/* Target URL */}
             <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl p-6 shadow-xl">
-              <label className="block text-sm font-semibold text-white mb-2">Target URL</label>
+              <label className="block text-sm font-semibold text-white mb-2">Target Webpage URL</label>
               <input 
                 type="text" 
                 value={targetUrl}
@@ -160,10 +190,10 @@ export default function PlaygroundPage() {
               />
             </div>
 
-            {/* Schema Fields */}
+            {/* Schema Builder */}
             <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl p-6 shadow-xl">
               <div className="flex items-center justify-between mb-4">
-                <label className="block text-sm font-semibold text-white">JSON Extraction Schema</label>
+                <label className="block text-sm font-semibold text-white">Extraction Schema (What to extract?)</label>
                 <button 
                   onClick={addField}
                   className="flex items-center gap-1.5 text-xs font-medium text-red-400 hover:text-red-300 bg-red-500/10 px-3 py-1.5 rounded-lg transition-colors border border-red-500/20"
@@ -174,7 +204,7 @@ export default function PlaygroundPage() {
 
               <div className="space-y-3">
                 {fields.map((field) => (
-                  <div key={field.id} className="flex gap-3 items-start animate-in fade-in slide-in-from-left-2 duration-300">
+                  <div key={field.id} className="flex gap-3 items-start">
                     <div className="flex-1 space-y-2">
                       <div className="flex gap-2">
                         <input 
@@ -215,12 +245,12 @@ export default function PlaygroundPage() {
             </div>
           </div>
 
-          {/* Right Column: Dynamic Code & Live Execution Output */}
+          {/* Right Column: Dynamic Code & Response */}
           <div className="space-y-6 flex flex-col justify-between">
             <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl flex flex-col">
               <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 bg-zinc-900/50">
                 <div className="flex items-center gap-2 text-xs font-semibold text-white">
-                  <Terminal size={14} className="text-zinc-400" /> Dynamic Request
+                  <Terminal size={14} className="text-zinc-400" /> Dynamic Request (Ready to Copy)
                 </div>
                 <button
                   onClick={() => copyToClipboard(curlCommand)}
@@ -241,7 +271,7 @@ export default function PlaygroundPage() {
               </div>
 
               <div className="p-4 border-t border-zinc-800 bg-zinc-900/30 flex items-center justify-between">
-                <span className="text-xs text-zinc-500">Test live payload execution</span>
+                <span className="text-xs text-zinc-500">Test payload before integration</span>
                 <button 
                   onClick={handleExecute}
                   disabled={isExecuting}
@@ -260,7 +290,7 @@ export default function PlaygroundPage() {
               </div>
             </div>
 
-            {/* Output Window */}
+            {/* Output Terminal */}
             <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl flex-1 min-h-[220px] flex flex-col">
               <div className="px-4 py-3 border-b border-zinc-800 bg-zinc-900/50 flex items-center justify-between">
                 <span className="text-xs font-semibold text-zinc-300 flex items-center gap-2">
