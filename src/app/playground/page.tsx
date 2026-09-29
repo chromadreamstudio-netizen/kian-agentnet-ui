@@ -53,7 +53,7 @@ export default function ProtocolPlayground() {
       }
     } catch {
       setError("فشل الاتصال بالخادم. تأكد من عمل الـ Backend.");
-    } font-mono {
+    } finally {
       setLoading(false);
     }
   };
@@ -223,7 +223,6 @@ export default function ProtocolPlayground() {
   );
 }
 
-// تنسيق ألوان الـ JSON داخل التيرمينال ليتناسب مع الهوية
 function syntaxHighlight(json: string) {
   json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
