@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { 
-  ArrowLeft, Plus, Trash2, Code2, Copy, Check, Terminal, Play, Braces
+  ArrowLeft, Plus, Trash2, Copy, Check, Terminal, Play, Braces
 } from "lucide-react";
 
 type SchemaField = {
@@ -33,7 +33,6 @@ export default function PlaygroundPage() {
     setFields(fields.filter(f => f.id !== id));
   };
 
-  // توليد كود الـ JSON بناءً على الحقول
   const generatedSchema = fields.reduce((acc, field) => {
     if (field.key) {
       acc[field.key] = field.type;
@@ -118,7 +117,7 @@ export default function PlaygroundPage() {
               </div>
 
               <div className="space-y-3">
-                {fields.map((field, index) => (
+                {fields.map((field) => (
                   <div key={field.id} className="flex gap-3 items-start animate-in fade-in slide-in-from-left-2 duration-300">
                     <div className="flex-1 space-y-2">
                       <div className="flex gap-2">
