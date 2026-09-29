@@ -16,7 +16,7 @@ type SchemaField = {
 export default function PlaygroundPage() {
   const [apiKey, setApiKey] = useState("sk_kian_c6z9wk1grqq93f002c67");
   const [showKey, setShowKey] = useState(false);
-  const [targetUrl, setTargetUrl] = useState("https://example.com/product/123");
+  const [targetUrl, setTargetUrl] = useState("https://www.aliexpress.us/item/3256811494265096.html");
   const [fields, setFields] = useState<SchemaField[]>([
     { id: "1", key: "product_name", type: "string", description: "The main title of the product" },
     { id: "2", key: "price", type: "number", description: "The numerical price" }
@@ -25,7 +25,7 @@ export default function PlaygroundPage() {
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionResponse, setExecutionResponse] = useState<string | null>(null);
 
-  // Load Preset Example for Instant Validation
+  // Load Preset Example
   const loadPresetExample = () => {
     setTargetUrl("https://news.ycombinator.com/item?id=37000000");
     setFields([
@@ -49,21 +49,24 @@ export default function PlaygroundPage() {
 
   const generatedSchema = fields.reduce((acc, field) => {
     if (field.key) {
-      acc[field.key] = field.type;
+      acc[field.key] = `${field.type} - ${field.description}`;
     }
     return acc;
   }, {} as Record<string, string>);
 
   const payloadObject = {
-    target: targetUrl,
-    schema: generatedSchema
+    url: targetUrl,
+    target_schema: JSON.stringify(generatedSchema)
   };
 
   const jsonString = JSON.stringify(payloadObject, null, 2);
   const activeKey = apiKey.trim() || "YOUR_API_KEY";
 
-  const curlCommand = `curl -X POST https://api.kian-agentnet.com/v1/extract \\
-  -H "Authorization: Bearer ${activeKey}" \\
+  // Real API Endpoint on Render
+  const BACKEND_URL = "https://kian-agentnet-backend.onrender.com/v1/gateway/execute";
+
+  const curlCommand = `curl -X POST ${BACKEND_URL} \\
+  -H "X-API-Key: ${activeKey}" \\
   -H "Content-Type: application/json" \\
   -d '${jsonString}'`;
 
@@ -73,23 +76,32 @@ export default function PlaygroundPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleExecute = () => {
+  // Real Execution Request to Render Backend
+  const handleExecute = async () => {
     setIsExecuting(true);
     setExecutionResponse(null);
-    setTimeout(() => {
-      const mockResult = {
-        status: "success",
-        credits_used: 1,
-        credits_remaining: 49,
-        execution_time_ms: 342,
-        data: {
-          product_name: "KIAN Enterprise Autonomous Agent Node",
-          price: 299.99
-        }
-      };
-      setExecutionResponse(JSON.stringify(mockResult, null, 2));
+
+    try {
+      const response = await fetch(BACKEND_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": activeKey
+        },
+        body: JSON.stringify(payloadObject)
+      });
+
+      const data = await response.json();
+      setExecutionResponse(JSON.stringify(data, null, 2));
+    } catch (error: any) {
+      setExecutionResponse(JSON.stringify({
+        status: "error",
+        message: "Failed to connect to Render backend.",
+        details: error?.message || error
+      }, null, 2));
+    } finally {
       setIsExecuting(false);
-    }, 1400);
+    }
   };
 
   return (
@@ -102,7 +114,7 @@ export default function PlaygroundPage() {
               <span className="text-black font-black text-xs tracking-tighter">K</span>
             </div>
             <span className="font-bold text-sm tracking-tight text-white flex items-center gap-2">
-              Protocol Playground <span className="text-zinc-500 font-normal">| Interactive Tester</span>
+              Protocol Playground <span className="text-zinc-500 font-normal">| Live Tester</span>
             </span>
           </div>
 
@@ -126,7 +138,7 @@ export default function PlaygroundPage() {
         <div className="mb-8 bg-zinc-900/60 border border-zinc-800 p-5 rounded-2xl">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <HelpCircle size={16} className="text-red-400" /> How to use this Playground in 3 Steps:
+              <HelpCircle size={16} className="text-red-400" /> Live Extraction Tester:
             </h2>
             <button 
               onClick={loadPresetExample}
@@ -135,20 +147,9 @@ export default function PlaygroundPage() {
               ⚡ Fill Example Data
             </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-zinc-400">
-            <div className="bg-zinc-950/80 p-3 rounded-xl border border-zinc-800/80">
-              <strong className="text-zinc-200 block mb-1">1. Paste URL &amp; Define Schema:</strong>
-              Enter the target webpage and the exact JSON fields you want the AI to extract.
-            </div>
-            <div className="bg-zinc-950/80 p-3 rounded-xl border border-zinc-800/80">
-              <strong className="text-zinc-200 block mb-1">2. Test Extraction Live:</strong>
-              Click &quot;Execute Extraction&quot; to test your setup and view real-time JSON response.
-            </div>
-            <div className="bg-zinc-950/80 p-3 rounded-xl border border-zinc-800/80">
-              <strong className="text-zinc-200 block mb-1">3. Copy cURL for Code:</strong>
-              Copy the generated cURL command and use it directly in Python, n8n, or your AI agents.
-            </div>
-          </div>
+          <p className="text-xs text-zinc-400 leading-relaxed">
+            تتم معالجة الطلب مباشرة عبر سيرفر Playwright و Gemini AI المستضيف على Render لفتح الرابط الحقيقي واستخراج البيانات المحددة.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -250,7 +251,7 @@ export default function PlaygroundPage() {
             <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl flex flex-col">
               <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 bg-zinc-900/50">
                 <div className="flex items-center gap-2 text-xs font-semibold text-white">
-                  <Terminal size={14} className="text-zinc-400" /> Dynamic Request (Ready to Copy)
+                  <Terminal size={14} className="text-zinc-400" /> Live Request (Ready to Copy)
                 </div>
                 <button
                   onClick={() => copyToClipboard(curlCommand)}
@@ -263,15 +264,15 @@ export default function PlaygroundPage() {
               
               <div className="p-4 bg-[#0a0a0c] overflow-auto max-h-[260px]">
                 <pre className="font-mono text-[12px] text-zinc-300 leading-relaxed break-all whitespace-pre-wrap">
-                  <span className="text-red-400">curl</span> -X POST https://api.kian-agentnet.com/v1/extract \{'\n'}
-                  {'  '}-H <span className="text-green-400">&quot;Authorization: Bearer {activeKey}&quot;</span> \{'\n'}
+                  <span className="text-red-400">curl</span> -X POST {BACKEND_URL} \{'\n'}
+                  {'  '}-H <span className="text-green-400">&quot;X-API-Key: {activeKey}&quot;</span> \{'\n'}
                   {'  '}-H <span className="text-green-400">&quot;Content-Type: application/json&quot;</span> \{'\n'}
                   {'  '}-d <span className="text-yellow-300">&apos;{jsonString}&apos;</span>
                 </pre>
               </div>
 
               <div className="p-4 border-t border-zinc-800 bg-zinc-900/30 flex items-center justify-between">
-                <span className="text-xs text-zinc-500">Test payload before integration</span>
+                <span className="text-xs text-zinc-500">Executes scraper + Gemini live on Render</span>
                 <button 
                   onClick={handleExecute}
                   disabled={isExecuting}
@@ -279,7 +280,7 @@ export default function PlaygroundPage() {
                 >
                   {isExecuting ? (
                     <>
-                      <RefreshCw size={14} className="animate-spin" /> Extracting Data...
+                      <RefreshCw size={14} className="animate-spin" /> Scraping Webpage...
                     </>
                   ) : (
                     <>
@@ -297,7 +298,7 @@ export default function PlaygroundPage() {
                   <span className="w-2 h-2 rounded-full bg-green-500" /> Response Terminal Output
                 </span>
                 {executionResponse && (
-                  <span className="text-[10px] font-mono text-zinc-500">HTTP 200 OK</span>
+                  <span className="text-[10px] font-mono text-zinc-500">Live Render Response</span>
                 )}
               </div>
               <div className="p-4 bg-[#0a0a0c] font-mono text-xs text-green-400 flex-1 overflow-auto">
@@ -305,7 +306,7 @@ export default function PlaygroundPage() {
                   <pre className="whitespace-pre-wrap">{executionResponse}</pre>
                 ) : (
                   <div className="text-zinc-600 text-center py-10 italic">
-                    Click &quot;Execute Extraction&quot; to test your JSON schema and API key against the KIAN engine.
+                    Click &quot;Execute Extraction&quot; to fetch live data from the target website using your Render engine.
                   </div>
                 )}
               </div>
