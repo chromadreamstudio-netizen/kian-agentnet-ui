@@ -76,7 +76,7 @@ export default function PlaygroundPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Real Execution Request to Render Backend
+  // Real Execution Request to Render Backend (Fixed for Vercel TypeScript)
   const handleExecute = async () => {
     setIsExecuting(true);
     setExecutionResponse(null);
@@ -93,11 +93,12 @@ export default function PlaygroundPage() {
 
       const data = await response.json();
       setExecutionResponse(JSON.stringify(data, null, 2));
-    } catch (error: any) {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       setExecutionResponse(JSON.stringify({
         status: "error",
         message: "Failed to connect to Render backend.",
-        details: error?.message || error
+        details: errorMessage
       }, null, 2));
     } finally {
       setIsExecuting(false);
@@ -148,7 +149,7 @@ export default function PlaygroundPage() {
             </button>
           </div>
           <p className="text-xs text-zinc-400 leading-relaxed">
-            تتم معالجة الطلب مباشرة عبر سيرفر Playwright و Gemini AI المستضيف على Render لفتح الرابط الحقيقي واستخراج البيانات المحددة.
+            تتم معالجة الطلب مباشرة عبر سيرفر Playwright و Gemini AI المستضاف على Render لفتح الرابط الحقيقي واستخراج البيانات المحددة.
           </p>
         </div>
 
