@@ -13,7 +13,6 @@ export default function DashboardPage() {
   const [copied, setCopied] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
 
-  // دالة لتوليد المفتاح (محاكاة للواجهة الأمامية)
   const handleGenerateKey = async () => {
     setIsGenerating(true);
     setTimeout(() => {
@@ -114,7 +113,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Quick Start Section - يظهر فقط بعد إنشاء المفتاح */}
+        {/* Quick Start Section */}
         {apiKey && (
           <div className="mt-8 bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <h2 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
@@ -134,10 +133,10 @@ export default function DashboardPage() {
                 </button>
               </div>
               <pre className="bg-[#0c0c0e] border border-zinc-800 rounded-xl p-4 font-mono text-[13px] text-zinc-300 overflow-x-auto leading-relaxed">
-<span className="text-red-400">curl</span> -X POST https://api.kian-agentnet.com/v1/extract \
-  -H <span className="text-green-400">"Authorization: Bearer {apiKey}"</span> \
-  -H <span className="text-green-400">"Content-Type: application/json"</span> \
-  -d <span className="text-yellow-300">'&#123;"target": "https://example.com"&#125;'</span>
+                <span className="text-red-400">curl</span> -X POST https://api.kian-agentnet.com/v1/extract \{'\n'}
+                {'  '}-H <span className="text-green-400">&quot;Authorization: Bearer {apiKey}&quot;</span> \{'\n'}
+                {'  '}-H <span className="text-green-400">&quot;Content-Type: application/json&quot;</span> \{'\n'}
+                {'  '}-d <span className="text-yellow-300">&apos;&#123;&quot;target&quot;: &quot;https://example.com&quot;&#125;&apos;</span>
               </pre>
             </div>
 
@@ -146,7 +145,7 @@ export default function DashboardPage() {
                 <BookOpen size={16} className="text-red-400" /> API Documentation
               </Link>
               <Link href="#" className="flex items-center gap-2 text-sm text-zinc-300 hover:text-white bg-zinc-800/50 hover:bg-zinc-800 px-4 py-2 rounded-lg transition-colors border border-zinc-700/30">
-                <Webhook size={16} className="text-red-400" /> n8n & Python Setup Guide
+                <Webhook size={16} className="text-red-400" /> n8n &amp; Python Setup Guide
               </Link>
             </div>
           </div>
