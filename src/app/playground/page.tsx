@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { 
-  ArrowLeft, Plus, Trash2, Copy, Check, Play, Key, Eye, EyeOff, Sparkles, RefreshCw, HelpCircle, Code2
+  ArrowLeft, Plus, Trash2, Copy, Check, Play, Key, Eye, EyeOff, Sparkles, RefreshCw, HelpCircle, Code2, Globe, Database, Cpu
 } from "lucide-react";
 
 type SchemaField = {
@@ -16,25 +16,21 @@ type SchemaField = {
 export default function PlaygroundPage() {
   const [apiKey, setApiKey] = useState("sk_kian_c6z9wk1grqq93f002c67");
   const [showKey, setShowKey] = useState(false);
-  const [credits, setCredits] = useState(50);
+  const [credits, setCredits] = useState(49);
   const [codeLang, setCodeLang] = useState<"cURL" | "Node.js" | "Python">("cURL");
+  
+  // Example updated to be more resilient
   const [targetUrl, setTargetUrl] = useState("https://www.aliexpress.us/item/3256811494265096.html");
+  
+  // Highly optimized descriptions to force the AI to find the data
   const [fields, setFields] = useState<SchemaField[]>([
-    { id: "1", key: "product_name", type: "string", description: "The main title of the product" },
-    { id: "2", key: "price", type: "number", description: "The numerical price" }
+    { id: "1", key: "product_name", type: "string", description: "The full, exact title of the product. Look at the main heading (H1)." },
+    { id: "2", key: "price", type: "number", description: "The final sale price. Ignore currency symbols ($ or €). Return ONLY the numbers (e.g. 15.99). Look for the largest price text." }
   ]);
+  
   const [copied, setCopied] = useState(false);
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionResponse, setExecutionResponse] = useState<string | null>(null);
-
-  const loadPresetExample = () => {
-    setTargetUrl("https://news.ycombinator.com/item?id=37000000");
-    setFields([
-      { id: "1", key: "article_title", type: "string", description: "Title of the post" },
-      { id: "2", key: "points", type: "number", description: "Total upvotes or points" },
-      { id: "3", key: "author", type: "string", description: "Username of the submitter" }
-    ]);
-  };
 
   const addField = () => {
     setFields([...fields, { id: Math.random().toString(), key: "", type: "string", description: "" }]);
@@ -50,7 +46,7 @@ export default function PlaygroundPage() {
 
   const generatedSchema = fields.reduce((acc, field) => {
     if (field.key) {
-      acc[field.key] = `${field.type} - ${field.description}`;
+      acc[field.key] = `${field.type} - Prompt to AI: ${field.description}`;
     }
     return acc;
   }, {} as Record<string, string>);
@@ -69,9 +65,9 @@ export default function PlaygroundPage() {
     if (codeLang === "cURL") {
       return `curl -X POST ${BACKEND_URL} \\\n  -H "X-API-Key: ${activeKey}" \\\n  -H "Content-Type: application/json" \\\n  -d '${jsonString}'`;
     } else if (codeLang === "Node.js") {
-      return `const response = await fetch("${BACKEND_URL}", {\n  method: "POST",\n  headers: {\n    "X-API-Key": "${activeKey}",\n    "Content-Type": "application/json"\n  },\n  body: JSON.stringify(${jsonString.replace(/\n/g, '\n  ')})\n});\n\nconst data = await response.json();\nconsole.log(data);`;
+      return `// Copy this into your Node.js app\nconst response = await fetch("${BACKEND_URL}", {\n  method: "POST",\n  headers: {\n    "X-API-Key": "${activeKey}",\n    "Content-Type": "application/json"\n  },\n  body: JSON.stringify(${jsonString.replace(/\n/g, '\n  ')})\n});\n\nconst data = await response.json();\nconsole.log(data);`;
     } else if (codeLang === "Python") {
-      return `import requests\n\nurl = "${BACKEND_URL}"\nheaders = {\n    "X-API-Key": "${activeKey}",\n    "Content-Type": "application/json"\n}\npayload = ${jsonString.replace(/\n/g, '\n')}\n\nresponse = requests.post(url, headers=headers, json=payload)\nprint(response.json())`;
+      return `# Copy this into your Python script\nimport requests\n\nurl = "${BACKEND_URL}"\nheaders = {\n    "X-API-Key": "${activeKey}",\n    "Content-Type": "application/json"\n}\npayload = ${jsonString.replace(/\n/g, '\n')}\n\nresponse = requests.post(url, headers=headers, json=payload)\nprint(response.json())`;
     }
     return "";
   };
@@ -124,82 +120,62 @@ export default function PlaygroundPage() {
               <span className="text-black font-black text-xs tracking-tighter">K</span>
             </div>
             <span className="font-bold text-sm tracking-tight text-white flex items-center gap-2">
-              Protocol Playground <span className="text-zinc-500 font-normal">| Live Tester</span>
+              Kian Auto-Scraper <span className="text-zinc-500 font-normal">| Smart Extraction</span>
             </span>
           </div>
 
           <div className="flex items-center gap-4">
             <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-zinc-400 bg-zinc-900 px-3 py-1 rounded-lg border border-zinc-800">
-              <Sparkles size={13} className="text-red-400" /> Starter Plan: <strong className="text-white">{credits} Credits</strong>
+              <Sparkles size={13} className="text-red-400" /> Plan: <strong className="text-white">{credits} Credits</strong>
             </span>
             <Link 
               href="/dashboard" 
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700 bg-zinc-900/50 text-xs font-medium text-zinc-300 hover:text-white transition-all"
             >
-              <ArrowLeft size={14} /> Back to Dashboard
+              <ArrowLeft size={14} /> Dashboard
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="max-w-5xl mx-auto px-6 py-10">
         
-        <div className="mb-8 bg-zinc-900/60 border border-zinc-800 p-5 rounded-2xl">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <HelpCircle size={16} className="text-red-400" /> Live Extraction Tester
-            </h2>
-            <button 
-              onClick={loadPresetExample}
-              className="text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg font-medium transition-all"
-            >
-              ⚡ Fill Example Data
-            </button>
-          </div>
-          <p className="text-xs text-zinc-400 leading-relaxed">
-            Requests are processed directly via your Render-hosted Playwright & Gemini AI engine to navigate the actual URL and extract structured data based on your specific schema.
+        <div className="mb-10 text-center space-y-3">
+          <h1 className="text-2xl font-bold text-white">Extract Data from Any Website</h1>
+          <p className="text-sm text-zinc-400 max-w-2xl mx-auto">
+            Follow the 3 simple steps below. Tell the AI what you want, and it will browse the site and grab the data for you.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Left Column: User Inputs */}
+          <div className="lg:col-span-7 space-y-6">
             
-            <div className="bg-[#0c0c0e] border border-red-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden">
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-bold text-red-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Key size={14} /> Your Secret API Key
-                </label>
-                <button 
-                  onClick={() => setShowKey(!showKey)}
-                  className="text-zinc-500 hover:text-zinc-300 transition-colors text-xs flex items-center gap-1"
-                >
-                  {showKey ? <EyeOff size={13} /> : <Eye size={13} />}
-                  {showKey ? "Hide" : "Show"}
-                </button>
-              </div>
-              <input 
-                type={showKey ? "text" : "password"}
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Paste your API key here"
-                className="w-full bg-zinc-900/90 border border-zinc-800 rounded-lg px-4 py-2.5 font-mono text-xs text-zinc-200 focus:outline-none focus:border-red-500/50 transition-all"
-              />
-            </div>
-
-            <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl p-6 shadow-xl">
-              <label className="block text-sm font-semibold text-white mb-2">Target Webpage URL</label>
+            {/* Step 1 */}
+            <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl p-6 shadow-xl relative">
+              <div className="absolute -top-3 -left-3 w-8 h-8 bg-zinc-800 text-white font-bold rounded-full flex items-center justify-center border-4 border-[#09090b]">1</div>
+              <label className="flex items-center gap-2 text-sm font-bold text-white mb-1">
+                <Globe size={16} className="text-red-400" /> Target Website URL
+              </label>
+              <p className="text-xs text-zinc-500 mb-4">Paste the link of the page you want to extract data from.</p>
+              
               <input 
                 type="text" 
                 value={targetUrl}
                 onChange={(e) => setTargetUrl(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-xs text-zinc-200 focus:outline-none focus:border-red-500/50 transition-all font-mono"
-                placeholder="https://example.com/data"
+                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-sm text-zinc-200 focus:outline-none focus:border-red-500/50 transition-all font-mono"
+                placeholder="https://..."
               />
             </div>
 
-            <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl p-6 shadow-xl">
-              <div className="flex items-center justify-between mb-4">
-                <label className="block text-sm font-semibold text-white">Extraction Schema (What to extract?)</label>
+            {/* Step 2 */}
+            <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl p-6 shadow-xl relative">
+              <div className="absolute -top-3 -left-3 w-8 h-8 bg-zinc-800 text-white font-bold rounded-full flex items-center justify-center border-4 border-[#09090b]">2</div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="flex items-center gap-2 text-sm font-bold text-white">
+                  <Database size={16} className="text-red-400" /> What to Extract? (Schema)
+                </label>
                 <button 
                   onClick={addField}
                   className="flex items-center gap-1.5 text-xs font-medium text-red-400 hover:text-red-300 bg-red-500/10 px-3 py-1.5 rounded-lg transition-colors border border-red-500/20"
@@ -207,41 +183,52 @@ export default function PlaygroundPage() {
                   <Plus size={14} /> Add Field
                 </button>
               </div>
+              <p className="text-xs text-zinc-500 mb-5">Define the fields. <strong className="text-zinc-300">Important:</strong> Use the description to give the AI precise instructions on how to find it.</p>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {fields.map((field) => (
-                  <div key={field.id} className="flex gap-3 items-start">
-                    <div className="flex-1 space-y-2">
+                  <div key={field.id} className="flex gap-3 items-start bg-zinc-900/50 p-3 rounded-xl border border-zinc-800/50">
+                    <div className="flex-1 space-y-3">
                       <div className="flex gap-2">
+                        <div className="w-1/2">
+                          <label className="text-[10px] uppercase text-zinc-500 font-bold mb-1 block">Field Name</label>
+                          <input 
+                            type="text" 
+                            value={field.key}
+                            onChange={(e) => updateField(field.id, "key", e.target.value)}
+                            placeholder="e.g. price"
+                            className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-200 font-mono focus:outline-none focus:border-red-500/50"
+                          />
+                        </div>
+                        <div className="w-1/2">
+                          <label className="text-[10px] uppercase text-zinc-500 font-bold mb-1 block">Data Type</label>
+                          <select 
+                            value={field.type}
+                            onChange={(e) => updateField(field.id, "type", e.target.value)}
+                            className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-400 focus:outline-none focus:border-red-500/50"
+                          >
+                            <option value="string">Text (String)</option>
+                            <option value="number">Number</option>
+                            <option value="boolean">True/False (Boolean)</option>
+                            <option value="array">List (Array)</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase text-zinc-500 font-bold mb-1 block">Instructions for AI (Crucial for success)</label>
                         <input 
                           type="text" 
-                          value={field.key}
-                          onChange={(e) => updateField(field.id, "key", e.target.value)}
-                          placeholder="field_name"
-                          className="w-1/2 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-200 font-mono focus:outline-none focus:border-zinc-600"
+                          value={field.description}
+                          onChange={(e) => updateField(field.id, "description", e.target.value)}
+                          placeholder="Tell the AI exactly what to look for..."
+                          className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-300 focus:outline-none focus:border-red-500/50"
                         />
-                        <select 
-                          value={field.type}
-                          onChange={(e) => updateField(field.id, "type", e.target.value)}
-                          className="w-1/2 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-400 focus:outline-none focus:border-zinc-600"
-                        >
-                          <option value="string">String (Text)</option>
-                          <option value="number">Number</option>
-                          <option value="boolean">Boolean</option>
-                          <option value="array">Array (List)</option>
-                        </select>
                       </div>
-                      <input 
-                        type="text" 
-                        value={field.description}
-                        onChange={(e) => updateField(field.id, "description", e.target.value)}
-                        placeholder="Detailed description to help AI..."
-                        className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-3 py-2 text-xs text-zinc-400 focus:outline-none focus:border-zinc-700"
-                      />
                     </div>
                     <button 
                       onClick={() => removeField(field.id)}
-                      className="p-2.5 text-zinc-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors mt-0.5"
+                      className="p-2 text-zinc-600 hover:text-red-400 bg-zinc-800 hover:bg-red-500/10 rounded-lg transition-colors mt-5"
+                      title="Remove field"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -249,82 +236,104 @@ export default function PlaygroundPage() {
                 ))}
               </div>
             </div>
+
+            {/* API Key Box (Minimized visually) */}
+            <div className="bg-zinc-900/30 border border-zinc-800/50 rounded-xl p-4 flex items-center justify-between gap-4">
+              <div className="flex-1">
+                <label className="text-xs font-bold text-zinc-400 flex items-center gap-1.5 mb-1">
+                  <Key size={12} /> Authentication Key
+                </label>
+                <div className="relative">
+                  <input 
+                    type={showKey ? "text" : "password"}
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    className="w-full bg-transparent border-b border-zinc-700 py-1 text-xs text-zinc-300 focus:outline-none focus:border-red-500 font-mono"
+                  />
+                </div>
+              </div>
+              <button onClick={() => setShowKey(!showKey)} className="text-zinc-500 hover:text-zinc-300 text-xs mt-4">
+                {showKey ? "Hide" : "Show"}
+              </button>
+            </div>
+
           </div>
 
-          <div className="space-y-6 flex flex-col justify-between">
-            <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl flex flex-col">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 bg-zinc-900/50">
-                <div className="flex items-center gap-2 text-xs font-semibold text-white">
-                  <Code2 size={14} className="text-zinc-400" /> Integration Code
-                </div>
-                <button
-                  onClick={() => copyToClipboard(getCodeSnippet())}
-                  className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400 hover:text-white bg-zinc-800 px-2.5 py-1 rounded transition-colors"
+          {/* Right Column: Execution & Developer Zone */}
+          <div className="lg:col-span-5 space-y-6 flex flex-col">
+            
+            {/* Step 3 */}
+            <div className="bg-[#0c0c0e] border border-red-500/30 rounded-2xl p-1 shadow-xl relative flex-1 flex flex-col min-h-[300px]">
+              <div className="absolute -top-3 -left-3 w-8 h-8 bg-red-500 text-black font-bold rounded-full flex items-center justify-center border-4 border-[#09090b] z-10">3</div>
+              
+              <div className="p-5 border-b border-zinc-800/50 flex flex-col items-center justify-center gap-3">
+                <p className="text-xs text-zinc-400 text-center">Ready? Let the AI navigate the site and grab your data.</p>
+                <button 
+                  onClick={handleExecute}
+                  disabled={isExecuting}
+                  className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-black font-bold text-sm px-5 py-3.5 rounded-xl transition-all shadow-[0_0_20px_rgba(239,68,68,0.3)] disabled:opacity-50 disabled:shadow-none"
                 >
-                  {copied ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
-                  {copied ? "Copied" : "Copy Code"}
+                  {isExecuting ? (
+                    <>
+                      <RefreshCw size={16} className="animate-spin" /> AI is Extracting Data...
+                    </>
+                  ) : (
+                    <>
+                      <Cpu size={16} className="fill-current" /> Run Extraction Now
+                    </>
+                  )}
                 </button>
               </div>
+
+              <div className="flex-1 bg-[#050505] rounded-b-xl p-4 flex flex-col overflow-hidden relative">
+                <span className="absolute top-2 right-3 text-[9px] uppercase tracking-widest text-zinc-600 font-bold">AI Response</span>
+                <div className="mt-4 flex-1 overflow-auto font-mono text-xs text-green-400">
+                  {executionResponse ? (
+                    <pre className="whitespace-pre-wrap">{executionResponse}</pre>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-zinc-600 text-center italic px-4">
+                      The extracted JSON data will appear here.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Developer Zone - Clearly separated so non-devs know they can ignore it */}
+            <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl overflow-hidden">
+              <div className="px-4 py-2 border-b border-zinc-800 bg-zinc-900 flex items-center justify-between">
+                <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+                  <Code2 size={14} /> Developer API Code
+                </span>
+                <span className="text-[10px] text-zinc-500 italic">Optional</span>
+              </div>
               
-              <div className="flex items-center gap-1 px-4 py-2 border-b border-zinc-800 bg-zinc-900/30 overflow-x-auto">
+              <div className="flex items-center gap-1 px-3 py-1.5 border-b border-zinc-800 bg-[#0a0a0c]">
                 {(["cURL", "Node.js", "Python"] as const).map((lang) => (
                   <button
                     key={lang}
                     onClick={() => setCodeLang(lang)}
-                    className={`px-3 py-1 text-[11px] font-medium rounded-md transition-all ${
-                      codeLang === lang
-                        ? "bg-zinc-800 text-white border border-zinc-700 shadow-sm"
-                        : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"
+                    className={`px-3 py-1 text-[10px] font-medium rounded transition-all ${
+                      codeLang === lang ? "bg-zinc-800 text-zinc-200" : "text-zinc-600 hover:text-zinc-400"
                     }`}
                   >
                     {lang}
                   </button>
                 ))}
-              </div>
-
-              <div className="p-4 bg-[#0a0a0c] overflow-auto max-h-[260px]">
-                <pre className="font-mono text-[12px] text-zinc-300 leading-relaxed break-all whitespace-pre-wrap">
-                  {getCodeSnippet()}
-                </pre>
-              </div>
-
-              <div className="p-4 border-t border-zinc-800 bg-zinc-900/30 flex items-center justify-between">
-                <span className="text-xs text-zinc-500">Executes protocol live on Render</span>
-                <button 
-                  onClick={handleExecute}
-                  disabled={isExecuting}
-                  className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-black font-bold text-xs px-5 py-2.5 rounded-lg transition-all shadow-lg shadow-red-500/20 disabled:opacity-50"
+                <div className="flex-1"></div>
+                <button
+                  onClick={() => copyToClipboard(getCodeSnippet())}
+                  className="flex items-center gap-1 text-[10px] font-medium text-red-400 hover:text-red-300"
                 >
-                  {isExecuting ? (
-                    <>
-                      <RefreshCw size={14} className="animate-spin" /> Scraping Webpage...
-                    </>
-                  ) : (
-                    <>
-                      <Play size={14} className="fill-current" /> Execute Extraction
-                    </>
-                  )}
+                  {copied ? <Check size={12} /> : <Copy size={12} />}
+                  {copied ? "Copied" : "Copy"}
                 </button>
               </div>
-            </div>
 
-            <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl flex-1 min-h-[220px] flex flex-col">
-              <div className="px-4 py-3 border-b border-zinc-800 bg-zinc-900/50 flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-300 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-green-500" /> Response Output
-                </span>
-                {executionResponse && (
-                  <span className="text-[10px] font-mono text-zinc-500">Live JSON Payload</span>
-                )}
-              </div>
-              <div className="p-4 bg-[#0a0a0c] font-mono text-xs text-green-400 flex-1 overflow-auto">
-                {executionResponse ? (
-                  <pre className="whitespace-pre-wrap">{executionResponse}</pre>
-                ) : (
-                  <div className="text-zinc-600 text-center py-10 italic">
-                    Click &quot;Execute Extraction&quot; to fetch live JSON payload.
-                  </div>
-                )}
+              <div className="p-3 bg-[#050505] overflow-auto max-h-[150px]">
+                <pre className="font-mono text-[10px] text-zinc-500 leading-relaxed whitespace-pre-wrap">
+                  {getCodeSnippet()}
+                </pre>
               </div>
             </div>
 
