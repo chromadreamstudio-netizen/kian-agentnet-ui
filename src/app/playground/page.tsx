@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { 
-  ArrowLeft, Plus, Trash2, Copy, Check, Terminal, Play, Key, Eye, EyeOff, Sparkles, RefreshCw, HelpCircle
+  ArrowLeft, Plus, Trash2, Copy, Check, Terminal, Play, Key, Eye, EyeOff, Sparkles, RefreshCw, HelpCircle, Code2
 } from "lucide-react";
 
 type SchemaField = {
@@ -16,6 +16,8 @@ type SchemaField = {
 export default function PlaygroundPage() {
   const [apiKey, setApiKey] = useState("sk_kian_c6z9wk1grqq93f002c67");
   const [showKey, setShowKey] = useState(false);
+  const [credits, setCredits] = useState(50); // Dynamic credits state
+  const [codeLang, setCodeLang] = useState<"cURL" | "Node.js" | "Python">("cURL"); // Code language selector
   const [targetUrl, setTargetUrl] = useState("https://www.aliexpress.us/item/3256811494265096.html");
   const [fields, setFields] = useState<SchemaField[]>([
     { id: "1", key: "product_name", type: "string", description: "The main title of the product" },
@@ -25,7 +27,6 @@ export default function PlaygroundPage() {
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionResponse, setExecutionResponse] = useState<string | null>(null);
 
-  // Load Preset Example
   const loadPresetExample = () => {
     setTargetUrl("https://news.ycombinator.com/item?id=37000000");
     setFields([
@@ -59,16 +60,22 @@ export default function PlaygroundPage() {
     target_schema: JSON.stringify(generatedSchema)
   };
 
-  const jsonString = JSON.stringify(payloadObject, null, 2);
   const activeKey = apiKey.trim() || "YOUR_API_KEY";
-
-  // Real API Endpoint on Render
   const BACKEND_URL = "https://kian-agentnet-backend.onrender.com/v1/gateway/execute";
 
-  const curlCommand = `curl -X POST ${BACKEND_URL} \\
-  -H "X-API-Key: ${activeKey}" \\
-  -H "Content-Type: application/json" \\
-  -d '${jsonString}'`;
+  // Dynamic code generator based on selected language
+  const getCodeSnippet = () => {
+    const jsonString = JSON.stringify(payloadObject, null, 2);
+    
+    if (codeLang === "cURL") {
+      return `curl -X POST ${BACKEND_URL} \\\n  -H "X-API-Key: ${activeKey}" \\\n  -H "Content-Type: application/json" \\\n  -d '${jsonString}'`;
+    } else if (codeLang === "Node.js") {
+      return `const response = await fetch("${BACKEND_URL}", {\n  method: "POST",\n  headers: {\n    "X-API-Key": "${activeKey}",\n    "Content-Type": "application/json"\n  },\n  body: JSON.stringify(${jsonString.replace(/\n/g, '\n  ')})\n});\n\nconst data = await response.json();\nconsole.log(data);`;
+    } else if (codeLang === "Python") {
+      return `import requests\n\nurl = "${BACKEND_URL}"\nheaders = {\n    "X-API-Key": "${activeKey}",\n    "Content-Type": "application/json"\n}\npayload = ${jsonString.replace(/\n/g, '\n')}\n\nresponse = requests.post(url, headers=headers, json=payload)\nprint(response.json())`;
+    }
+    return "";
+  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -76,7 +83,6 @@ export default function PlaygroundPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Real Execution Request to Render Backend (Fixed for Vercel TypeScript)
   const handleExecute = async () => {
     setIsExecuting(true);
     setExecutionResponse(null);
@@ -92,6 +98,12 @@ export default function PlaygroundPage() {
       });
 
       const data = await response.json();
+      
+      // Decrease credits dynamically if successful
+      if (response.ok && data.status === "success") {
+        setCredits(prev => Math.max(0, prev - 1));
+      }
+
       setExecutionResponse(JSON.stringify(data, null, 2));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -107,7 +119,6 @@ export default function PlaygroundPage() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 font-sans pb-20">
-      {/* Header */}
       <header className="border-b border-zinc-800/80 bg-[#09090b]/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -121,7 +132,7 @@ export default function PlaygroundPage() {
 
           <div className="flex items-center gap-4">
             <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-zinc-400 bg-zinc-900 px-3 py-1 rounded-lg border border-zinc-800">
-              <Sparkles size={13} className="text-red-400" /> Starter Plan: <strong className="text-white">50 Credits</strong>
+              <Sparkles size={13} className="text-red-400" /> Starter Plan: <strong className="text-white">{credits} Credits</strong>
             </span>
             <Link 
               href="/dashboard" 
@@ -135,11 +146,10 @@ export default function PlaygroundPage() {
 
       <main className="max-w-6xl mx-auto px-6 py-8">
         
-        {/* Step-by-Step Guidance Banner */}
         <div className="mb-8 bg-zinc-900/60 border border-zinc-800 p-5 rounded-2xl">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <HelpCircle size={16} className="text-red-400" /> Live Extraction Tester:
+              <HelpCircle size={16} className="text-red-400" /> Live Extraction Tester
             </h2>
             <button 
               onClick={loadPresetExample}
@@ -149,15 +159,13 @@ export default function PlaygroundPage() {
             </button>
           </div>
           <p className="text-xs text-zinc-400 leading-relaxed">
-            تتم معالجة الطلب مباشرة عبر سيرفر Playwright و Gemini AI المستضاف على Render لفتح الرابط الحقيقي واستخراج البيانات المحددة.
+            Requests are processed directly via your Render-hosted Playwright & Gemini AI engine to navigate the actual URL and extract structured data based on your specific schema.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column: Inputs */}
           <div className="space-y-6">
             
-            {/* API Key */}
             <div className="bg-[#0c0c0e] border border-red-500/30 rounded-2xl p-6 shadow-xl relative overflow-hidden">
               <div className="flex items-center justify-between mb-2">
                 <label className="text-xs font-bold text-red-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -175,12 +183,11 @@ export default function PlaygroundPage() {
                 type={showKey ? "text" : "password"}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Paste your sk_kian_... key here"
+                placeholder="Paste your API key here"
                 className="w-full bg-zinc-900/90 border border-zinc-800 rounded-lg px-4 py-2.5 font-mono text-xs text-zinc-200 focus:outline-none focus:border-red-500/50 transition-all"
               />
             </div>
 
-            {/* Target URL */}
             <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl p-6 shadow-xl">
               <label className="block text-sm font-semibold text-white mb-2">Target Webpage URL</label>
               <input 
@@ -192,7 +199,6 @@ export default function PlaygroundPage() {
               />
             </div>
 
-            {/* Schema Builder */}
             <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl p-6 shadow-xl">
               <div className="flex items-center justify-between mb-4">
                 <label className="block text-sm font-semibold text-white">Extraction Schema (What to extract?)</label>
@@ -231,7 +237,7 @@ export default function PlaygroundPage() {
                         type="text" 
                         value={field.description}
                         onChange={(e) => updateField(field.id, "description", e.target.value)}
-                        placeholder="Description for AI extraction..."
+                        placeholder="Detailed description to help AI..."
                         className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-3 py-2 text-xs text-zinc-400 focus:outline-none focus:border-zinc-700"
                       />
                     </div>
@@ -247,33 +253,46 @@ export default function PlaygroundPage() {
             </div>
           </div>
 
-          {/* Right Column: Dynamic Code & Response */}
           <div className="space-y-6 flex flex-col justify-between">
             <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl flex flex-col">
               <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 bg-zinc-900/50">
                 <div className="flex items-center gap-2 text-xs font-semibold text-white">
-                  <Terminal size={14} className="text-zinc-400" /> Live Request (Ready to Copy)
+                  <Code2 size={14} className="text-zinc-400" /> Integration Code
                 </div>
                 <button
-                  onClick={() => copyToClipboard(curlCommand)}
+                  onClick={() => copyToClipboard(getCodeSnippet())}
                   className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400 hover:text-white bg-zinc-800 px-2.5 py-1 rounded transition-colors"
                 >
                   {copied ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
-                  {copied ? "Copied" : "Copy cURL"}
+                  {copied ? "Copied" : "Copy Code"}
                 </button>
               </div>
               
+              {/* Language Selector Tabs */}
+              <div className="flex items-center gap-1 px-4 py-2 border-b border-zinc-800 bg-zinc-900/30 overflow-x-auto">
+                {(["cURL", "Node.js", "Python"] as const).map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => setCodeLang(lang)}
+                    className={`px-3 py-1 text-[11px] font-medium rounded-md transition-all ${
+                      codeLang === lang
+                        ? "bg-zinc-800 text-white border border-zinc-700 shadow-sm"
+                        : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"
+                    }`}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+
               <div className="p-4 bg-[#0a0a0c] overflow-auto max-h-[260px]">
                 <pre className="font-mono text-[12px] text-zinc-300 leading-relaxed break-all whitespace-pre-wrap">
-                  <span className="text-red-400">curl</span> -X POST {BACKEND_URL} \{'\n'}
-                  {'  '}-H <span className="text-green-400">&quot;X-API-Key: {activeKey}&quot;</span> \{'\n'}
-                  {'  '}-H <span className="text-green-400">&quot;Content-Type: application/json&quot;</span> \{'\n'}
-                  {'  '}-d <span className="text-yellow-300">&apos;{jsonString}&apos;</span>
+                  {getCodeSnippet()}
                 </pre>
               </div>
 
               <div className="p-4 border-t border-zinc-800 bg-zinc-900/30 flex items-center justify-between">
-                <span className="text-xs text-zinc-500">Executes scraper + Gemini live on Render</span>
+                <span className="text-xs text-zinc-500">Executes protocol live on Render</span>
                 <button 
                   onClick={handleExecute}
                   disabled={isExecuting}
@@ -292,14 +311,13 @@ export default function PlaygroundPage() {
               </div>
             </div>
 
-            {/* Output Terminal */}
             <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-xl flex-1 min-h-[220px] flex flex-col">
               <div className="px-4 py-3 border-b border-zinc-800 bg-zinc-900/50 flex items-center justify-between">
                 <span className="text-xs font-semibold text-zinc-300 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-green-500" /> Response Terminal Output
+                  <span className="w-2 h-2 rounded-full bg-green-500" /> Response Output
                 </span>
                 {executionResponse && (
-                  <span className="text-[10px] font-mono text-zinc-500">Live Render Response</span>
+                  <span className="text-[10px] font-mono text-zinc-500">Live JSON Payload</span>
                 )}
               </div>
               <div className="p-4 bg-[#0a0a0c] font-mono text-xs text-green-400 flex-1 overflow-auto">
@@ -307,7 +325,7 @@ export default function PlaygroundPage() {
                   <pre className="whitespace-pre-wrap">{executionResponse}</pre>
                 ) : (
                   <div className="text-zinc-600 text-center py-10 italic">
-                    Click &quot;Execute Extraction&quot; to fetch live data from the target website using your Render engine.
+                    Click &quot;Execute Extraction&quot; to fetch live JSON payload.
                   </div>
                 )}
               </div>
