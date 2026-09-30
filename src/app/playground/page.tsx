@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { 
-  ArrowLeft, Plus, Trash2, Copy, Check, Terminal, Play, Key, Eye, EyeOff, Sparkles, RefreshCw, HelpCircle, Code2
+  ArrowLeft, Plus, Trash2, Copy, Check, Play, Key, Eye, EyeOff, Sparkles, RefreshCw, HelpCircle, Code2
 } from "lucide-react";
 
 type SchemaField = {
@@ -16,8 +16,8 @@ type SchemaField = {
 export default function PlaygroundPage() {
   const [apiKey, setApiKey] = useState("sk_kian_c6z9wk1grqq93f002c67");
   const [showKey, setShowKey] = useState(false);
-  const [credits, setCredits] = useState(50); // Dynamic credits state
-  const [codeLang, setCodeLang] = useState<"cURL" | "Node.js" | "Python">("cURL"); // Code language selector
+  const [credits, setCredits] = useState(50);
+  const [codeLang, setCodeLang] = useState<"cURL" | "Node.js" | "Python">("cURL");
   const [targetUrl, setTargetUrl] = useState("https://www.aliexpress.us/item/3256811494265096.html");
   const [fields, setFields] = useState<SchemaField[]>([
     { id: "1", key: "product_name", type: "string", description: "The main title of the product" },
@@ -63,7 +63,6 @@ export default function PlaygroundPage() {
   const activeKey = apiKey.trim() || "YOUR_API_KEY";
   const BACKEND_URL = "https://kian-agentnet-backend.onrender.com/v1/gateway/execute";
 
-  // Dynamic code generator based on selected language
   const getCodeSnippet = () => {
     const jsonString = JSON.stringify(payloadObject, null, 2);
     
@@ -99,7 +98,6 @@ export default function PlaygroundPage() {
 
       const data = await response.json();
       
-      // Decrease credits dynamically if successful
       if (response.ok && data.status === "success") {
         setCredits(prev => Math.max(0, prev - 1));
       }
@@ -268,7 +266,6 @@ export default function PlaygroundPage() {
                 </button>
               </div>
               
-              {/* Language Selector Tabs */}
               <div className="flex items-center gap-1 px-4 py-2 border-b border-zinc-800 bg-zinc-900/30 overflow-x-auto">
                 {(["cURL", "Node.js", "Python"] as const).map((lang) => (
                   <button
