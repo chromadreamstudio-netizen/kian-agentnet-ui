@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { 
-  ArrowLeft, Plus, Trash2, Copy, Check, Play, Key, Eye, EyeOff, Sparkles, RefreshCw, HelpCircle, Code2, Globe, Database, Cpu
+  ArrowLeft, Plus, Trash2, Copy, Check, Key, Sparkles, RefreshCw, Code2, Globe, Database, Cpu
 } from "lucide-react";
 
 type SchemaField = {
@@ -19,10 +19,8 @@ export default function PlaygroundPage() {
   const [credits, setCredits] = useState(49);
   const [codeLang, setCodeLang] = useState<"cURL" | "Node.js" | "Python">("cURL");
   
-  // Example updated to be more resilient
   const [targetUrl, setTargetUrl] = useState("https://www.aliexpress.us/item/3256811494265096.html");
   
-  // Highly optimized descriptions to force the AI to find the data
   const [fields, setFields] = useState<SchemaField[]>([
     { id: "1", key: "product_name", type: "string", description: "The full, exact title of the product. Look at the main heading (H1)." },
     { id: "2", key: "price", type: "number", description: "The final sale price. Ignore currency symbols ($ or €). Return ONLY the numbers (e.g. 15.99). Look for the largest price text." }
@@ -149,7 +147,6 @@ export default function PlaygroundPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* Left Column: User Inputs */}
           <div className="lg:col-span-7 space-y-6">
             
             {/* Step 1 */}
@@ -237,7 +234,6 @@ export default function PlaygroundPage() {
               </div>
             </div>
 
-            {/* API Key Box (Minimized visually) */}
             <div className="bg-zinc-900/30 border border-zinc-800/50 rounded-xl p-4 flex items-center justify-between gap-4">
               <div className="flex-1">
                 <label className="text-xs font-bold text-zinc-400 flex items-center gap-1.5 mb-1">
@@ -259,7 +255,6 @@ export default function PlaygroundPage() {
 
           </div>
 
-          {/* Right Column: Execution & Developer Zone */}
           <div className="lg:col-span-5 space-y-6 flex flex-col">
             
             {/* Step 3 */}
@@ -299,7 +294,6 @@ export default function PlaygroundPage() {
               </div>
             </div>
 
-            {/* Developer Zone - Clearly separated so non-devs know they can ignore it */}
             <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl overflow-hidden">
               <div className="px-4 py-2 border-b border-zinc-800 bg-zinc-900 flex items-center justify-between">
                 <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
