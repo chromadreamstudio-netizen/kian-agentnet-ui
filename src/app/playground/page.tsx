@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { 
-  ArrowLeft, Plus, Trash2, Copy, Check, Key, Sparkles, RefreshCw, Code2, Globe, Database, Cpu
+  ArrowLeft, Plus, Trash2, Copy, Check, Key, Sparkles, RefreshCw, Code2, Globe, Database, Cpu, Wand2, Settings2
 } from "lucide-react";
 
 type SchemaField = {
@@ -21,9 +21,12 @@ export default function PlaygroundPage() {
   
   const [targetUrl, setTargetUrl] = useState("https://www.aliexpress.us/item/3256811494265096.html");
   
+  // وضع الاستخراج: إما تلقائي (نينجا) أو مخصص (حقول)
+  const [extractionMode, setExtractionMode] = useState<"auto" | "custom">("auto");
+  
   const [fields, setFields] = useState<SchemaField[]>([
-    { id: "1", key: "product_name", type: "string", description: "The full, exact title of the product. Look at the main heading (H1)." },
-    { id: "2", key: "price", type: "number", description: "The final sale price. Ignore currency symbols ($ or €). Return ONLY the numbers (e.g. 15.99). Look for the largest price text." }
+    { id: "1", key: "product_name", type: "string", description: "The full, exact title of the product." },
+    { id: "2", key: "price", type: "number", description: "The final sale price. Ignore currency symbols." }
   ]);
   
   const [copied, setCopied] = useState(false);
@@ -49,9 +52,12 @@ export default function PlaygroundPage() {
     return acc;
   }, {} as Record<string, string>);
 
+  // نحدد ما سنرسله للباك إند بناءً على الوضع المختار
   const payloadObject = {
     url: targetUrl,
-    target_schema: JSON.stringify(generatedSchema)
+    target_schema: extractionMode === "auto" 
+      ? "Extract core entities, prices, structured specifications, and metadata." 
+      : JSON.stringify(generatedSchema)
   };
 
   const activeKey = apiKey.trim() || "YOUR_API_KEY";
@@ -169,69 +175,106 @@ export default function PlaygroundPage() {
             {/* Step 2 */}
             <div className="bg-[#0c0c0e] border border-zinc-800/80 rounded-2xl p-6 shadow-xl relative">
               <div className="absolute -top-3 -left-3 w-8 h-8 bg-zinc-800 text-white font-bold rounded-full flex items-center justify-center border-4 border-[#09090b]">2</div>
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-4">
                 <label className="flex items-center gap-2 text-sm font-bold text-white">
                   <Database size={16} className="text-red-400" /> What to Extract? (Schema)
                 </label>
+              </div>
+
+              {/* Mode Toggle Tabs */}
+              <div className="flex bg-zinc-900/50 p-1 rounded-lg border border-zinc-800 mb-5">
                 <button 
-                  onClick={addField}
-                  className="flex items-center gap-1.5 text-xs font-medium text-red-400 hover:text-red-300 bg-red-500/10 px-3 py-1.5 rounded-lg transition-colors border border-red-500/20"
+                  onClick={() => setExtractionMode("auto")}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-md transition-all ${extractionMode === "auto" ? "bg-red-500/10 text-red-400 border border-red-500/20 shadow-sm" : "text-zinc-500 hover:text-zinc-300"}`}
                 >
-                  <Plus size={14} /> Add Field
+                  <Wand2 size={14} /> E-Commerce Auto-Pilot
+                </button>
+                <button 
+                  onClick={() => setExtractionMode("custom")}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-md transition-all ${extractionMode === "custom" ? "bg-zinc-800 text-white border border-zinc-700 shadow-sm" : "text-zinc-500 hover:text-zinc-300"}`}
+                >
+                  <Settings2 size={14} /> Custom Schema
                 </button>
               </div>
-              <p className="text-xs text-zinc-500 mb-5">Define the fields. <strong className="text-zinc-300">Important:</strong> Use the description to give the AI precise instructions on how to find it.</p>
 
-              <div className="space-y-4">
-                {fields.map((field) => (
-                  <div key={field.id} className="flex gap-3 items-start bg-zinc-900/50 p-3 rounded-xl border border-zinc-800/50">
-                    <div className="flex-1 space-y-3">
-                      <div className="flex gap-2">
-                        <div className="w-1/2">
-                          <label className="text-[10px] uppercase text-zinc-500 font-bold mb-1 block">Field Name</label>
-                          <input 
-                            type="text" 
-                            value={field.key}
-                            onChange={(e) => updateField(field.id, "key", e.target.value)}
-                            placeholder="e.g. price"
-                            className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-200 font-mono focus:outline-none focus:border-red-500/50"
-                          />
-                        </div>
-                        <div className="w-1/2">
-                          <label className="text-[10px] uppercase text-zinc-500 font-bold mb-1 block">Data Type</label>
-                          <select 
-                            value={field.type}
-                            onChange={(e) => updateField(field.id, "type", e.target.value)}
-                            className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-400 focus:outline-none focus:border-red-500/50"
-                          >
-                            <option value="string">Text (String)</option>
-                            <option value="number">Number</option>
-                            <option value="boolean">True/False (Boolean)</option>
-                            <option value="array">List (Array)</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-[10px] uppercase text-zinc-500 font-bold mb-1 block">Instructions for AI (Crucial for success)</label>
-                        <input 
-                          type="text" 
-                          value={field.description}
-                          onChange={(e) => updateField(field.id, "description", e.target.value)}
-                          placeholder="Tell the AI exactly what to look for..."
-                          className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-300 focus:outline-none focus:border-red-500/50"
-                        />
-                      </div>
-                    </div>
+              {/* Auto Mode View */}
+              {extractionMode === "auto" && (
+                <div className="bg-red-500/5 border border-red-500/10 rounded-xl p-5 text-center space-y-2">
+                  <div className="w-10 h-10 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Sparkles size={20} className="text-red-400" />
+                  </div>
+                  <h3 className="text-sm font-bold text-white">Magic Extraction Enabled</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed max-w-md mx-auto">
+                    Kian AI will automatically analyze the page and extract <strong className="text-zinc-200">Products, Prices, High-Res Images, Variants, and Specifications</strong> without needing any setup.
+                  </p>
+                </div>
+              )}
+
+              {/* Custom Mode View */}
+              {extractionMode === "custom" && (
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs text-zinc-500">Define specific fields for custom data scraping (Real Estate, News, Directories).</p>
                     <button 
-                      onClick={() => removeField(field.id)}
-                      className="p-2 text-zinc-600 hover:text-red-400 bg-zinc-800 hover:bg-red-500/10 rounded-lg transition-colors mt-5"
-                      title="Remove field"
+                      onClick={addField}
+                      className="flex items-center gap-1.5 text-xs font-medium text-white hover:text-red-300 bg-zinc-800 px-3 py-1.5 rounded-lg transition-colors border border-zinc-700"
                     >
-                      <Trash2 size={16} />
+                      <Plus size={14} /> Add Field
                     </button>
                   </div>
-                ))}
-              </div>
+                  
+                  <div className="space-y-4">
+                    {fields.map((field) => (
+                      <div key={field.id} className="flex gap-3 items-start bg-zinc-900/50 p-3 rounded-xl border border-zinc-800/50">
+                        <div className="flex-1 space-y-3">
+                          <div className="flex gap-2">
+                            <div className="w-1/2">
+                              <label className="text-[10px] uppercase text-zinc-500 font-bold mb-1 block">Field Name</label>
+                              <input 
+                                type="text" 
+                                value={field.key}
+                                onChange={(e) => updateField(field.id, "key", e.target.value)}
+                                placeholder="e.g. price"
+                                className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-200 font-mono focus:outline-none focus:border-red-500/50"
+                              />
+                            </div>
+                            <div className="w-1/2">
+                              <label className="text-[10px] uppercase text-zinc-500 font-bold mb-1 block">Data Type</label>
+                              <select 
+                                value={field.type}
+                                onChange={(e) => updateField(field.id, "type", e.target.value)}
+                                className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-400 focus:outline-none focus:border-red-500/50"
+                              >
+                                <option value="string">Text (String)</option>
+                                <option value="number">Number</option>
+                                <option value="boolean">True/False (Boolean)</option>
+                                <option value="array">List (Array)</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-[10px] uppercase text-zinc-500 font-bold mb-1 block">Instructions for AI (Crucial)</label>
+                            <input 
+                              type="text" 
+                              value={field.description}
+                              onChange={(e) => updateField(field.id, "description", e.target.value)}
+                              placeholder="Tell the AI exactly what to look for..."
+                              className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-300 focus:outline-none focus:border-red-500/50"
+                            />
+                          </div>
+                        </div>
+                        <button 
+                          onClick={() => removeField(field.id)}
+                          className="p-2 text-zinc-600 hover:text-red-400 bg-zinc-800 hover:bg-red-500/10 rounded-lg transition-colors mt-5"
+                          title="Remove field"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="bg-zinc-900/30 border border-zinc-800/50 rounded-xl p-4 flex items-center justify-between gap-4">
